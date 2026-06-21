@@ -1,0 +1,8 @@
+# Phase 0 (data layer) needs NOTHING beyond the Python 3.9+ standard library —
+# run scripts/fetch_data.py with a bare interpreter.
+#
+# The modelling phases will add:
+#   numpy        # vectorised Monte Carlo (~10k tournament sims)
+#   scipy        # Poisson / bivariate-Poisson sampling
+# and optionally:
+#   pytest       # the tests also run standalone via `python3 tests/test_*.py`

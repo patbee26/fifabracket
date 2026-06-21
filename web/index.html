@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>World Cup 2026 — Live Odds</title>
+<style>
+  :root{
+    --bg:#f4f5f7; --surface:#fff; --surface2:#fafbfc; --ink:#16191d; --muted:#646b73;
+    --faint:#9aa1a9; --line:#e6e8eb; --line2:#d6d9dd; --accent:#0e7a52; --accent-rgb:14,122,82;
+    --qual:#0e7a52; --warn:#c47d12; --out:#b23b3b; --radius:12px;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme]){
+    --bg:#0e1115; --surface:#161a20; --surface2:#1b2027; --ink:#e8eaed; --muted:#9aa2ac;
+    --faint:#6b7480; --line:#262c34; --line2:#323943; --accent:#2bb37e; --accent-rgb:43,179,126;
+  }}
+  [data-theme=dark]{
+    --bg:#0e1115; --surface:#161a20; --surface2:#1b2027; --ink:#e8eaed; --muted:#9aa2ac;
+    --faint:#6b7480; --line:#262c34; --line2:#323943; --accent:#2bb37e; --accent-rgb:43,179,126;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.5;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 18px 64px}
+  header.top{border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:20}
+  .hd{max-width:1080px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .brand{font-weight:700;font-size:19px;letter-spacing:-.02em;margin-right:auto;display:flex;align-items:center;gap:10px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 rgba(var(--accent-rgb),.5);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),.5)}70%{box-shadow:0 0 0 7px rgba(var(--accent-rgb),0)}100%{box-shadow:0 0 0 0 rgba(var(--accent-rgb),0)}}
+  .meta{font-size:12.5px;color:var(--muted)}
+  .meta b{color:var(--ink);font-weight:600}
+  button.ghost{font:inherit;font-size:13px;color:var(--muted);background:none;border:1px solid var(--line2);
+    border-radius:8px;padding:6px 10px;cursor:pointer}
+  button.ghost:hover{color:var(--ink);border-color:var(--accent)}
+  nav.tabs{max-width:1080px;margin:0 auto;padding:0 18px;display:flex;gap:4px;overflow-x:auto}
+  nav.tabs button{font:inherit;font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;
+    padding:12px 14px;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap}
+  nav.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent)}
+  section.tab{display:none;padding-top:26px}
+  section.tab.active{display:block}
+  h2.sec{font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 14px}
+  .lead{font-size:14px;color:var(--muted);margin:-8px 0 20px;max-width:62ch}
+
+  /* title race */
+  .hero{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;margin-bottom:22px}
+  .hero .big{font-size:46px;font-weight:800;letter-spacing:-.03em;line-height:1}
+  .hero .sub{font-size:14px;color:var(--muted)}
+  .race{display:grid;gap:8px}
+  .row{display:grid;grid-template-columns:26px 1fr 56px;align-items:center;gap:12px}
+  .rank{font-size:13px;color:var(--faint);text-align:right;font-weight:600}
+  .barwrap{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:8px;height:34px;overflow:hidden}
+  .barfill{position:absolute;inset:0 auto 0 0;background:rgba(var(--accent-rgb),.16);border-right:2px solid var(--accent);transition:width .6s cubic-bezier(.2,.7,.2,1)}
+  .barlabel{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 12px;font-weight:600;font-size:14px}
+  .barlabel .code{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:600}
+  .pct{text-align:right;font-weight:700;font-size:14.5px}
+  .flash{animation:flash 1.4s ease-out}
+  @keyframes flash{0%{background:rgba(var(--accent-rgb),.4)}100%{background:transparent}}
+
+  /* groups */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+  .card h3{margin:0 0 10px;font-size:14px;letter-spacing:.02em;display:flex;justify-content:space-between;align-items:baseline}
+  .card h3 span{font-size:11.5px;color:var(--faint);font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  .gt td,.gt th{padding:6px 4px;text-align:right}
+  .gt th{font-size:11px;color:var(--faint);font-weight:600;border-bottom:1px solid var(--line)}
+  .gt td.name,.gt th.name{text-align:left}
+  .gt td.name{font-weight:600;display:flex;align-items:center;gap:7px}
+  .gt tr.q1 td.pos,.gt tr.q2 td.pos{color:var(--qual);font-weight:700}
+  .pos{width:18px;color:var(--faint);font-weight:600}
+  .zone{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--line2)}
+  .miniq{font-family:var(--mono);font-size:12px;font-weight:600;padding:2px 7px;border-radius:6px}
+  .qline{border-top:1.5px dashed var(--line2)}
+
+  /* full table */
+  .tablecard{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow-x:auto}
+  table.full{font-size:13px;min-width:760px}
+  table.full th,table.full td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--line)}
+  table.full th{position:sticky;top:0;background:var(--surface);font-size:11px;color:var(--muted);font-weight:700;
+    text-transform:uppercase;letter-spacing:.03em;cursor:pointer;user-select:none;white-space:nowrap}
+  table.full th:hover{color:var(--ink)}
+  table.full th[aria-sort] .ar::after{content:"";margin-left:3px}
+  table.full th.sorted::after{content:" ▾";color:var(--accent)}
+  table.full th.sorted.asc::after{content:" ▴"}
+  table.full td.name,table.full th.name{text-align:left;font-weight:600;white-space:nowrap}
+  table.full td.code{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:left}
+  table.full td.p{font-variant-numeric:tabular-nums;border-radius:0}
+  table.full tr:hover td{background:var(--surface2)}
+
+  /* bracket */
+  .bracket{display:flex;gap:18px;overflow-x:auto;padding-bottom:12px}
+  .col{display:flex;flex-direction:column;justify-content:space-around;gap:10px;min-width:170px}
+  .col h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin:0 0 4px;text-align:center}
+  .mt{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:12.5px}
+  .mt .slot{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
+  .mt .slot.proj{color:var(--ink)}
+  .mt .slot.tbd{color:var(--faint)}
+  .mt .slot .seed{font-family:var(--mono);font-size:10px;color:var(--faint)}
+  .mt .mhd{padding-bottom:3px;margin-bottom:3px;border-bottom:1px solid var(--line)}
+  .mt .mno{display:flex;justify-content:space-between;gap:6px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);font-weight:600}
+  .mt .mloc{font-size:10.5px;color:var(--muted);margin-top:1px}
+  .mt+.mt{margin-top:0}
+
+  /* method */
+  .prose{max-width:70ch;font-size:14.5px;line-height:1.65}
+  .prose h3{font-size:15px;margin:22px 0 6px}
+  .prose p{color:var(--ink);margin:8px 0}
+  .prose code{font-family:var(--mono);font-size:12.5px;background:var(--surface2);padding:1px 5px;border-radius:5px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:14px 0}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .stat .v{font-size:22px;font-weight:700;letter-spacing:-.02em}
+  .stat .k{font-size:12px;color:var(--muted);margin-top:2px}
+  .note{font-size:13px;color:var(--muted);border-left:3px solid var(--line2);padding:4px 0 4px 12px;margin:12px 0}
+  .err{padding:30px;text-align:center;color:var(--muted)}
+  footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--faint)}
+</style>
+</head>
+<body>
+<h1 class="sr-only">World Cup 2026 live odds — a self-updating model of every team's chance to advance and win.</h1>
+
+<header class="top">
+  <div class="hd">
+    <div class="brand"><span class="dot" aria-hidden="true"></span> World Cup 2026 · Live Odds</div>
+    <div class="meta" id="meta">loading…</div>
+    <button class="ghost" id="theme" aria-label="Toggle dark mode">◐ Theme</button>
+  </div>
+  <nav class="tabs" id="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="race">Title race</button>
+    <button role="tab" aria-selected="false" data-tab="groups">Groups</button>
+    <button role="tab" aria-selected="false" data-tab="bracket">Bracket</button>
+    <button role="tab" aria-selected="false" data-tab="table">All teams</button>
+    <button role="tab" aria-selected="false" data-tab="method">Method</button>
+  </nav>
+</header>
+
+<div class="wrap">
+  <section class="tab active" id="tab-race" role="tabpanel">
+    <div class="hero" id="hero"></div>
+    <div class="race" id="race"></div>
+  </section>
+
+  <section class="tab" id="tab-groups" role="tabpanel">
+    <h2 class="sec">Group stage · qualification odds</h2>
+    <p class="lead">Top two of each group advance automatically; the eight best third-placed teams also reach the round of 32. Bars show each team's modelled chance of qualifying.</p>
+    <div class="grid" id="groups"></div>
+  </section>
+
+  <section class="tab" id="tab-bracket" role="tabpanel">
+    <h2 class="sec">Projected bracket</h2>
+    <p class="lead">The fixed 2026 knockout structure. Group slots are filled by current standings and firm up as the group stage finishes; third-placed slots resolve via the FIFA allocation table.</p>
+    <div class="bracket" id="bracket"></div>
+  </section>
+
+  <section class="tab" id="tab-table" role="tabpanel">
+    <h2 class="sec">All 48 teams</h2>
+    <p class="lead">Click any column to sort. Cells are shaded by probability.</p>
+    <div class="tablecard"><table class="full" id="full"></table></div>
+  </section>
+
+  <section class="tab" id="tab-method" role="tabpanel">
+    <h2 class="sec">How the model works</h2>
+    <div id="method" class="prose"></div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+
+<script id="bootstrap" type="application/json">
+{
+  "as_of": "2026-06-19",
+  "n_sims": 10000,
+  "completed_results": 35,
+  "model_params": {
+    "b0": 0.11005622452800427,
+    "b_elo": 0.18592410490613773,
+    "b_home": 0.25290299979801006,
+    "rho": -0.041,
+    "n_records": 23303,
+    "mean_goals": 1.3880268075782962
+  },
+  "teams": [
+    {
+      "code": "ARG",
+      "name": "Argentina",
+      "group": "J",
+      "elo": 2205,
+      "played": 1,
+      "pts": 3,
+      "gd": 3,
+      "gf": 3,
+      "pos": 1,
+      "p_qualify": 0.9987,
+      "p_r16": 0.7569,
+      "p_qf": 0.6238,
+      "p_sf": 0.4617,
+      "p_final": 0.3115,
+      "p_champion": 0.2055
+    },
+    {
+      "code": "ESP",
+      "name": "Spain",
+      "group": "H",
+      "elo": 2191,
+      "played": 1,
+      "pts": 1,
+      "gd": 0,
+      "gf": 0,
+      "pos": 3,
+      "p_qualify": 0.9677,
+      "p_r16": 0.6947,
+      "p_qf": 0.5282,
+      "p_sf": 0.4044,
+      "p_final": 0.2707,
+      "p_champion": 0.1645
+    },
+    {
+      "code": "FRA",
+      "name": "France",
+      "group": "I",
+      "elo": 2145,
+      "played": 1,
+      "pts": 3,
+      "gd": 2,
+      "gf": 3,
+      "pos": 2,
+      "p_qualify": 0.9959,
+      "p_r16": 0.7983,
+      "p_qf": 0.547,
+      "p_sf": 0.3596,
+      "p_final": 0.2206,
+      "p_champion": 0.1243
+    },
+    {
+      "code": "ENG",
+      "name": "England",
+      "group": "L",
+      "elo": 2120,
+      "played": 1,
+      "pts": 3,
+      "gd": 2,
+      "gf": 4,
+      "pos": 1,
+      "p_qualify": 0.9966,
+      "p_r16": 0.7481,
+      "p_qf": 0.4606,
+      "p_sf": 0.2902,
+      "p_final": 0.1577,
+      "p_champion": 0.0883
+    },
+    {
+      "code": "COL",
+      "name": "Colombia",
+      "group": "K",
+      "elo": 2082,
+      "played": 1,
+      "pts": 3,
+      "gd": 2,
+      "gf": 3,
+      "pos": 1,
+      "p_qualify": 0.9914,
+      "p_r16": 0.7445,
+      "p_qf": 0.4937,
+      "p_sf": 0.2472,
+      "p_final": 0.128,
+      "p_champion": 0.0662
+    },
+    {
+      "code": "BRA",
+      "name": "Brazil",
+      "group": "C",
+      "elo": 2072,
+      "played": 2,
+      "pts": 4,
+      "gd": 3,
+      "gf": 4,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 0.6135,
+      "p_qf": 0.3764,
+      "p_sf": 0.1948,
+      "p_final": 0.0938,
+      "p_champion": 0.0471
+    },
+    {
+      "code": "MEX",
+      "name": "Mexico",
+      "group": "A",
+      "elo": 2003,
+      "played": 2,
+      "pts": 6,
+      "gd": 3,
+      "gf": 3,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 0.7326,
+      "p_qf": 0.3628,
+      "p_sf": 0.2006,
+      "p_final": 0.0909,
+      "p_champion": 0.0464
+    },
+    {
+      "code": "USA",
+      "name": "United States",
+      "group": "D",
+      "elo": 1920,
+      "played": 2,
+      "pts": 6,
+      "gd": 5,
+      "gf": 6,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 0.7961,
+      "p_qf": 0.4995,
+      "p_sf": 0.1955,
+      "p_final": 0.0855,
+      "p_champion": 0.0302
+    },
+    {
+      "code": "POR",
+      "name": "Portugal",
+      "group": "K",
+      "elo": 2026,
+      "played": 1,
+      "pts": 1,
+      "gd": 0,
+      "gf": 1,
+      "pos": 2,
+      "p_qualify": 0.807,
+      "p_r16": 0.521,
+      "p_qf": 0.2578,
+      "p_sf": 0.1368,
+      "p_final": 0.0632,
+      "p_champion": 0.0272
+    },
+    {
+      "code": "GER",
+      "name": "Germany",
+      "group": "E",
+      "elo": 2016,
+      "played": 2,
+      "pts": 6,
+      "gd": 7,
+      "gf": 9,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 0.6462,
+      "p_qf": 0.2984,
+      "p_sf": 0.1614,
+      "p_final": 0.0747,
+      "p_champion": 0.0271
+    },
+    {
+      "code": "MAR",
+      "name": "Morocco",
+      "group": "C",
+      "elo": 2011,
+      "played": 2,
+      "pts": 4,
+      "gd": 1,
+      "gf": 2,
+      "pos": 2,
+      "p_qualify": 1.0,
+      "p_r16": 0.5326,
+      "p_qf": 0.3094,
+      "p_sf": 0.144,
+      "p_final": 0.0642,
+      "p_champion": 0.0253
+    },
+    {
+      "code": "NED",
+      "name": "Netherlands",
+      "group": "F",
+      "elo": 2009,
+      "played": 2,
+      "pts": 4,
+      "gd": 4,
+      "gf": 7,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 0.4879,
+      "p_qf": 0.2897,
+      "p_sf": 0.1313,
+      "p_final": 0.0594,
+      "p_champion": 0.0245
+    },
+    {
+      "code": "NOR",
+      "name": "Norway",
+      "group": "I",
+      "elo": 1993,
+      "played": 1,
+      "pts": 3,
+      "gd": 3,
+      "gf": 4,
+      "pos": 1,
+      "p_qualify": 0.987,
+      "p_r16": 0.6288,
+      "p_qf": 0.3134,
+      "p_sf": 0.1414,
+      "p_final": 0.0588,
+      "p_champion": 0.0227
+    },
+    {
+      "code": "JPN",
+      "name": "Japan",
+      "group": "F",
+      "elo": 1995,
+      "played": 1,
+      "pts": 1,
+      "gd": 0,
+      "gf": 2,
+      "pos": 3,
+      "p_qualify": 0.9153,
+      "p_r16": 0.4049,
+      "p_qf": 0.21,
+      "p_sf": 0.0911,
+      "p_final": 0.0365,
+      "p_champion": 0.0154
+    },
+    {
+      "code": "SUI",
+      "name": "Switzerland",
+      "group": "B",
+      "elo": 1951,
+      "played": 2,
+      "pts": 4,
+      "gd": 3,
+      "gf": 5,
+      "pos": 2,
+      "p_qualify": 1.0,
+      "p_r16": 0.6157,
+      "p_qf": 0.2627,
+      "p_sf": 0.1,
+      "p_final": 0.0392,
+      "p_champion": 0.015
+    },
+    {
+      "code": "CAN",
+      "name": "Canada",
+      "group": "B",
+      "elo": 1888,
+      "played": 2,
+      "pts": 4,
+      "gd": 6,
+      "gf": 7,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 0.6095,
+      "p_qf": 0.2532,
+      "p_sf": 0.094,
+      "p_final": 0.0366,
+      "p_champion": 0.0121
+    },
+    {
+      "code": "URU",
+      "name": "Uruguay",
+      "group": "H",
+      "elo": 1955,
+      "played": 1,
+      "pts": 1,
+      "gd": 0,
+      "gf": 1,
+      "pos": 1,
+      "p_qualify": 0.7705,
+      "p_r16": 0.275,
+      "p_qf": 0.1431,
+      "p_sf": 0.0639,
+      "p_final": 0.0258,
+      "p_champion": 0.0092
+    },
+    {
+      "code": "BEL",
+      "name": "Belgium",
+      "group": "G",
+      "elo": 1944,
+      "played": 1,
+      "pts": 1,
+      "gd": 0,
+      "gf": 1,
+      "pos": 3,
+      "p_qualify": 0.8257,
+      "p_r16": 0.4776,
+      "p_qf": 0.2004,
+      "p_sf": 0.0711,
+      "p_final": 0.0278,
+      "p_champion": 0.009
+    },
+    {
+      "code": "AUT",
+      "name": "Austria",
+      "group": "J",
+      "elo": 1920,
+      "played": 1,
+      "pts": 3,
+      "gd": 2,
+      "gf": 3,
+      "pos": 2,
+      "p_qualify": 0.9632,
+      "p_r16": 0.3568,
+      "p_qf": 0.1637,
+      "p_sf": 0.0709,
+      "p_final": 0.0263,
+      "p_champion": 0.0075
+    },
+    {
+      "code": "CRO",
+      "name": "Croatia",
+      "group": "L",
+      "elo": 1939,
+      "played": 1,
+      "pts": 0,
+      "gd": -2,
+      "gf": 2,
+      "pos": 4,
+      "p_qualify": 0.7753,
+      "p_r16": 0.3597,
+      "p_qf": 0.1323,
+      "p_sf": 0.0589,
+      "p_final": 0.0218,
+      "p_champion": 0.0063
+    },
+    {
+      "code": "ECU",
+      "name": "Ecuador",
+      "group": "E",
+      "elo": 1981,
+      "played": 2,
+      "pts": 1,
+      "gd": -1,
+      "gf": 0,
+      "pos": 3,
+      "p_qualify": 0.3439,
+      "p_r16": 0.1558,
+      "p_qf": 0.0766,
+      "p_sf": 0.0282,
+      "p_final": 0.0103,
+      "p_champion": 0.0047
+    },
+    {
+      "code": "KOR",
+      "name": "South Korea",
+      "group": "A",
+      "elo": 1888,
+      "played": 2,
+      "pts": 3,
+      "gd": 0,
+      "gf": 2,
+      "pos": 2,
+      "p_qualify": 0.9641,
+      "p_r16": 0.4157,
+      "p_qf": 0.1507,
+      "p_sf": 0.0493,
+      "p_final": 0.0158,
+      "p_champion": 0.0046
+    },
+    {
+      "code": "PAR",
+      "name": "Paraguay",
+      "group": "D",
+      "elo": 1901,
+      "played": 2,
+      "pts": 3,
+      "gd": -2,
+      "gf": 2,
+      "pos": 3,
+      "p_qualify": 0.8548,
+      "p_r16": 0.3671,
+      "p_qf": 0.107,
+      "p_sf": 0.0406,
+      "p_final": 0.0124,
+      "p_champion": 0.0036
+    },
+    {
+      "code": "AUS",
+      "name": "Australia",
+      "group": "D",
+      "elo": 1914,
+      "played": 2,
+      "pts": 3,
+      "gd": 0,
+      "gf": 2,
+      "pos": 2,
+      "p_qualify": 0.9563,
+      "p_r16": 0.4902,
+      "p_qf": 0.1301,
+      "p_sf": 0.0523,
+      "p_final": 0.0152,
+      "p_champion": 0.0036
+    },
+    {
+      "code": "CIV",
+      "name": "Ivory Coast",
+      "group": "E",
+      "elo": 1861,
+      "played": 2,
+      "pts": 3,
+      "gd": 0,
+      "gf": 2,
+      "pos": 2,
+      "p_qualify": 0.9481,
+      "p_r16": 0.2955,
+      "p_qf": 0.0973,
+      "p_sf": 0.028,
+      "p_final": 0.0075,
+      "p_champion": 0.0018
+    },
+    {
+      "code": "IRN",
+      "name": "Iran",
+      "group": "G",
+      "elo": 1889,
+      "played": 1,
+      "pts": 1,
+      "gd": 0,
+      "gf": 2,
+      "pos": 1,
+      "p_qualify": 0.6898,
+      "p_r16": 0.343,
+      "p_qf": 0.1194,
+      "p_sf": 0.0379,
+      "p_final": 0.0118,
+      "p_champion": 0.0018
+    },
+    {
+      "code": "SEN",
+      "name": "Senegal",
+      "group": "I",
+      "elo": 1893,
+      "played": 1,
+      "pts": 0,
+      "gd": -2,
+      "gf": 1,
+      "pos": 3,
+      "p_qualify": 0.5845,
+      "p_r16": 0.2465,
+      "p_qf": 0.1019,
+      "p_sf": 0.0313,
+      "p_final": 0.0081,
+      "p_champion": 0.0017
+    },
+    {
+      "code": "ALG",
+      "name": "Algeria",
+      "group": "J",
+      "elo": 1869,
+      "played": 1,
+      "pts": 0,
+      "gd": -3,
+      "gf": 0,
+      "pos": 4,
+      "p_qualify": 0.5266,
+      "p_r16": 0.1834,
+      "p_qf": 0.072,
+      "p_sf": 0.0198,
+      "p_final": 0.0061,
+      "p_champion": 0.0014
+    },
+    {
+      "code": "EGY",
+      "name": "Egypt",
+      "group": "G",
+      "elo": 1823,
+      "played": 1,
+      "pts": 1,
+      "gd": 0,
+      "gf": 1,
+      "pos": 4,
+      "p_qualify": 0.6829,
+      "p_r16": 0.2703,
+      "p_qf": 0.0727,
+      "p_sf": 0.0184,
+      "p_final": 0.0045,
+      "p_champion": 0.001
+    },
+    {
+      "code": "SCO",
+      "name": "Scotland",
+      "group": "C",
+      "elo": 1843,
+      "played": 2,
+      "pts": 3,
+      "gd": 0,
+      "gf": 1,
+      "pos": 3,
+      "p_qualify": 0.874,
+      "p_r16": 0.2424,
+      "p_qf": 0.0691,
+      "p_sf": 0.0174,
+      "p_final": 0.0055,
+      "p_champion": 0.0007
+    },
+    {
+      "code": "SWE",
+      "name": "Sweden",
+      "group": "F",
+      "elo": 1821,
+      "played": 2,
+      "pts": 3,
+      "gd": 0,
+      "gf": 6,
+      "pos": 2,
+      "p_qualify": 0.9145,
+      "p_r16": 0.201,
+      "p_qf": 0.0627,
+      "p_sf": 0.015,
+      "p_final": 0.0036,
+      "p_champion": 0.0006
+    },
+    {
+      "code": "UZB",
+      "name": "Uzbekistan",
+      "group": "K",
+      "elo": 1806,
+      "played": 1,
+      "pts": 0,
+      "gd": -2,
+      "gf": 1,
+      "pos": 4,
+      "p_qualify": 0.3764,
+      "p_r16": 0.1078,
+      "p_qf": 0.0249,
+      "p_sf": 0.0073,
+      "p_final": 0.002,
+      "p_champion": 0.0003
+    },
+    {
+      "code": "PAN",
+      "name": "Panama",
+      "group": "L",
+      "elo": 1807,
+      "played": 1,
+      "pts": 0,
+      "gd": -1,
+      "gf": 0,
+      "pos": 3,
+      "p_qualify": 0.221,
+      "p_r16": 0.059,
+      "p_qf": 0.0164,
+      "p_sf": 0.0044,
+      "p_final": 0.0006,
+      "p_champion": 0.0002
+    },
+    {
+      "code": "RSA",
+      "name": "South Africa",
+      "group": "A",
+      "elo": 1666,
+      "played": 2,
+      "pts": 1,
+      "gd": -2,
+      "gf": 1,
+      "pos": 4,
+      "p_qualify": 0.1574,
+      "p_r16": 0.03,
+      "p_qf": 0.0044,
+      "p_sf": 0.0008,
+      "p_final": 0.0001,
+      "p_champion": 0.0001
+    },
+    {
+      "code": "COD",
+      "name": "Democratic Republic of the Congo",
+      "group": "K",
+      "elo": 1784,
+      "played": 1,
+      "pts": 1,
+      "gd": 0,
+      "gf": 1,
+      "pos": 3,
+      "p_qualify": 0.4877,
+      "p_r16": 0.1428,
+      "p_qf": 0.0298,
+      "p_sf": 0.0079,
+      "p_final": 0.0014,
+      "p_champion": 0.0001
+    },
+    {
+      "code": "CZE",
+      "name": "Czech Republic",
+      "group": "A",
+      "elo": 1768,
+      "played": 2,
+      "pts": 1,
+      "gd": -1,
+      "gf": 2,
+      "pos": 3,
+      "p_qualify": 0.1251,
+      "p_r16": 0.0463,
+      "p_qf": 0.0143,
+      "p_sf": 0.0022,
+      "p_final": 0.0003,
+      "p_champion": 0.0
+    },
+    {
+      "code": "BIH",
+      "name": "Bosnia and Herzegovina",
+      "group": "B",
+      "elo": 1655,
+      "played": 2,
+      "pts": 1,
+      "gd": -3,
+      "gf": 2,
+      "pos": 3,
+      "p_qualify": 0.435,
+      "p_r16": 0.0619,
+      "p_qf": 0.0171,
+      "p_sf": 0.0023,
+      "p_final": 0.0001,
+      "p_champion": 0.0
+    },
+    {
+      "code": "QAT",
+      "name": "Qatar",
+      "group": "B",
+      "elo": 1579,
+      "played": 2,
+      "pts": 1,
+      "gd": -6,
+      "gf": 1,
+      "pos": 4,
+      "p_qualify": 0.2736,
+      "p_r16": 0.0265,
+      "p_qf": 0.005,
+      "p_sf": 0.0003,
+      "p_final": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "code": "HAI",
+      "name": "Haiti",
+      "group": "C",
+      "elo": 1678,
+      "played": 2,
+      "pts": 0,
+      "gd": -4,
+      "gf": 0,
+      "pos": 4,
+      "p_qualify": 0.0,
+      "p_r16": 0.0,
+      "p_qf": 0.0,
+      "p_sf": 0.0,
+      "p_final": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "code": "TUR",
+      "name": "Turkey",
+      "group": "D",
+      "elo": 1881,
+      "played": 2,
+      "pts": 0,
+      "gd": -3,
+      "gf": 0,
+      "pos": 4,
+      "p_qualify": 0.0,
+      "p_r16": 0.0,
+      "p_qf": 0.0,
+      "p_sf": 0.0,
+      "p_final": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "code": "CUW",
+      "name": "Curaçao",
+      "group": "E",
+      "elo": 1594,
+      "played": 2,
+      "pts": 1,
+      "gd": -6,
+      "gf": 1,
+      "pos": 4,
+      "p_qualify": 0.1253,
+      "p_r16": 0.0131,
+      "p_qf": 0.001,
+      "p_sf": 0.0,
+      "p_final": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "code": "TUN",
+      "name": "Tunisia",
+      "group": "F",
+      "elo": 1687,
+      "played": 1,
+      "pts": 0,
+      "gd": -4,
+      "gf": 1,
+      "pos": 4,
+      "p_qualify": 0.069,
+      "p_r16": 0.0091,
+      "p_qf": 0.0019,
+      "p_sf": 0.0003,
+      "p_final": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "code": "NZL",
+      "name": "New Zealand",
+      "group": "G",
+      "elo": 1747,
+      "played": 1,
+      "pts": 1,
+      "gd": 0,
+      "gf": 2,
+      "pos": 2,
+      "p_qualify": 0.4826,
+      "p_r16": 0.1466,
+      "p_qf": 0.0281,
+      "p_sf": 0.0056,
+      "p_final": 0.0002,
+      "p_champion": 0.0
+    },
+    {
+      "code": "CPV",
+      "name": "Cape Verde",
+      "group": "H",
+      "elo": 1682,
+      "played": 1,
+      "pts": 1,
+      "gd": 0,
+      "gf": 0,
+      "pos": 4,
+      "p_qualify": 0.4673,
+      "p_r16": 0.0814,
+      "p_qf": 0.0168,
+      "p_sf": 0.0025,
+      "p_final": 0.0002,
+      "p_champion": 0.0
+    },
+    {
+      "code": "KSA",
+      "name": "Saudi Arabia",
+      "group": "H",
+      "elo": 1713,
+      "played": 1,
+      "pts": 1,
+      "gd": 0,
+      "gf": 1,
+      "pos": 2,
+      "p_qualify": 0.4525,
+      "p_r16": 0.0812,
+      "p_qf": 0.0197,
+      "p_sf": 0.0037,
+      "p_final": 0.0003,
+      "p_champion": 0.0
+    },
+    {
+      "code": "IRQ",
+      "name": "Iraq",
+      "group": "I",
+      "elo": 1716,
+      "played": 1,
+      "pts": 0,
+      "gd": -3,
+      "gf": 1,
+      "pos": 4,
+      "p_qualify": 0.1258,
+      "p_r16": 0.028,
+      "p_qf": 0.0063,
+      "p_sf": 0.0006,
+      "p_final": 0.0001,
+      "p_champion": 0.0
+    },
+    {
+      "code": "JOR",
+      "name": "Jordan",
+      "group": "J",
+      "elo": 1744,
+      "played": 1,
+      "pts": 0,
+      "gd": -2,
+      "gf": 1,
+      "pos": 3,
+      "p_qualify": 0.1639,
+      "p_r16": 0.0422,
+      "p_qf": 0.0094,
+      "p_sf": 0.0018,
+      "p_final": 0.0005,
+      "p_champion": 0.0
+    },
+    {
+      "code": "GHA",
+      "name": "Ghana",
+      "group": "L",
+      "elo": 1673,
+      "played": 1,
+      "pts": 3,
+      "gd": 1,
+      "gf": 1,
+      "pos": 2,
+      "p_qualify": 0.7036,
+      "p_r16": 0.1128,
+      "p_qf": 0.0193,
+      "p_sf": 0.0033,
+      "p_final": 0.0004,
+      "p_champion": 0.0
+    }
+  ]
+}
+</script>
+<script>
+const ODDS_URL = "odds.json";
+const ROUNDS = [["p_qualify","R32"],["p_r16","R16"],["p_qf","QF"],["p_sf","SF"],["p_final","Final"],["p_champion","Win"]];
+let DATA=null, prevWin={}, sortKey="p_champion", sortAsc=false;
+
+const pct = p => (p*100).toFixed(p>=0.0995?0:1)+"%";
+const pctd = p => (p*100).toFixed(1)+"%";
+const fmtDate = s => { const [y,m,d]=s.split("-"); const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; return `${M[+m-1]} ${+d}, ${y}`; };
+function heat(p){ const t=Math.max(0,Math.min(1,p)); const a=0.06+t*0.82;
+  return {bg:`rgba(var(--accent-rgb),${a.toFixed(3)})`, fg: t>0.55?"#fff":"var(--ink)"}; }
+
+/* ---- bracket structure (mirror of wcodds/bracket.py) ---- */
+const R32 = {
+ 73:[["RU","A"],["RU","B"]],74:[["W","E"],["3","E"]],75:[["W","F"],["RU","C"]],76:[["W","C"],["RU","F"]],
+ 77:[["W","I"],["3","I"]],78:[["RU","E"],["RU","I"]],79:[["W","A"],["3","A"]],80:[["W","L"],["3","L"]],
+ 81:[["W","D"],["3","D"]],82:[["W","G"],["3","G"]],83:[["RU","K"],["RU","L"]],84:[["W","H"],["RU","J"]],
+ 85:[["W","B"],["3","B"]],86:[["W","J"],["RU","H"]],87:[["W","K"],["3","K"]],88:[["RU","D"],["RU","G"]]};
+const CAND={E:"ABCDF",I:"CDFGH",A:"CEFHI",L:"EHIJK",D:"BEFIJ",G:"AEHIJ",B:"EFGIJ",K:"DEIJL"};
+const KO={89:[74,77],90:[73,75],91:[76,78],92:[79,80],93:[83,84],94:[81,82],95:[86,88],96:[85,87],
+ 97:[89,90],98:[93,94],99:[91,92],100:[95,96],101:[97,98],102:[99,100],104:[101,102]};
+const COLS=[["Round of 32",[74,77,73,75,76,78,79,80,83,84,81,82,86,88,85,87]],
+ ["Round of 16",[89,90,93,94,91,92,95,96]],["Quarter-finals",[97,98,99,100]],
+ ["Semi-finals",[101,102]],["Final",[104]]];
+const LOC={73:"Inglewood",74:"Foxborough",75:"Monterrey",76:"Houston",77:"East Rutherford",78:"Arlington",
+ 79:"Mexico City",80:"Atlanta",81:"Santa Clara",82:"Seattle",83:"Toronto",84:"Inglewood",85:"Vancouver",
+ 86:"Miami Gardens",87:"Kansas City",88:"Arlington",89:"Philadelphia",90:"Houston",91:"East Rutherford",
+ 92:"Mexico City",93:"Arlington",94:"Seattle",95:"Atlanta",96:"Vancouver",97:"Foxborough",98:"Inglewood",
+ 99:"Miami Gardens",100:"Kansas City",101:"Arlington",102:"Atlanta",103:"Miami Gardens",104:"East Rutherford"};
+const DATE={73:"Jun 28",74:"Jun 29",75:"Jun 29",76:"Jun 29",77:"Jun 30",78:"Jun 30",79:"Jun 30",80:"Jul 1",
+ 81:"Jul 1",82:"Jul 1",83:"Jul 2",84:"Jul 2",85:"Jul 2",86:"Jul 3",87:"Jul 3",88:"Jul 3",89:"Jul 4",90:"Jul 4",
+ 91:"Jul 5",92:"Jul 5",93:"Jul 6",94:"Jul 6",95:"Jul 7",96:"Jul 7",97:"Jul 9",98:"Jul 10",99:"Jul 11",
+ 100:"Jul 11",101:"Jul 14",102:"Jul 15",103:"Jul 18",104:"Jul 19"};
+
+function byGroup(){ const g={}; DATA.teams.forEach(t=>{(g[t.group]=g[t.group]||[]).push(t)});
+  Object.values(g).forEach(a=>a.sort((x,y)=>x.pos-y.pos)); return g; }
+
+function render(){
+  const m=document.getElementById("meta");
+  m.innerHTML=`Results through <b>${fmtDate(DATA.as_of)}</b> · <b>${DATA.completed_results}</b> of 72 group games · <b>${DATA.n_sims.toLocaleString()}</b> simulations`;
+  renderRace(); renderGroups(); renderBracket(); renderTable(); renderMethod();
+  document.getElementById("foot").innerHTML=
+    `Model: Elo + Dixon-Coles Poisson + Monte Carlo. Free data (martj42 · worldcup26.ir · football-data.org). Personal, non-commercial. Not betting advice.`;
+  DATA.teams.forEach(t=>prevWin[t.code]=t.p_champion);
+}
+
+function renderRace(){
+  const teams=[...DATA.teams].sort((a,b)=>b.p_champion-a.p_champion);
+  const top=teams[0], max=top.p_champion;
+  document.getElementById("hero").innerHTML=
+    `<div><div class="sub">Most likely to lift the trophy</div><div class="big">${top.name}</div></div>
+     <div><div class="big" style="color:var(--accent)">${pctd(top.p_champion)}</div><div class="sub">to win · ${pctd(top.p_final)} reach the final</div></div>`;
+  const race=document.getElementById("race");
+  race.innerHTML="";
+  teams.slice(0,16).forEach((t,i)=>{
+    const w=Math.max(2,(t.p_champion/max)*100);
+    const changed=prevWin[t.code]!==undefined && Math.abs(prevWin[t.code]-t.p_champion)>0.004;
+    const row=document.createElement("div"); row.className="row";
+    row.innerHTML=`<div class="rank">${i+1}</div>
+      <div class="barwrap${changed?" flash":""}"><div class="barfill" style="width:${w}%"></div>
+        <div class="barlabel"><span>${t.name}</span><span class="code">${t.code}</span></div></div>
+      <div class="pct">${pctd(t.p_champion)}</div>`;
+    race.appendChild(row);
+  });
+}
+
+function renderGroups(){
+  const g=byGroup(), host=document.getElementById("groups"); host.innerHTML="";
+  Object.keys(g).sort().forEach(letter=>{
+    const teams=g[letter];
+    const rows=teams.map((t,i)=>{
+      const h=heat(t.p_qualify);
+      const cls=i===0?"q1":i===1?"q2":"";
+      const sep=i===2?' style="border-top:1.5px dashed var(--line2)"':"";
+      return `<tr class="${cls}"${sep}>
+        <td class="pos">${t.pos}</td>
+        <td class="name">${t.name}</td>
+        <td>${t.played}</td><td>${t.pts}</td>
+        <td>${t.gd>0?"+":""}${t.gd}</td>
+        <td style="width:64px"><span class="miniq" style="background:${h.bg};color:${h.fg}">${pct(t.p_qualify)}</span></td>
+      </tr>`;
+    }).join("");
+    const card=document.createElement("div"); card.className="card";
+    card.innerHTML=`<h3>Group ${letter} <span>qualify</span></h3>
+      <table class="gt"><thead><tr><th class="pos"></th><th class="name">Team</th><th>Pl</th><th>Pts</th><th>GD</th><th>Q%</th></tr></thead>
+      <tbody>${rows}</tbody></table>`;
+    host.appendChild(card);
+  });
+}
+
+function projTeam(slot,g){
+  const [kind,grp]=slot;
+  if(kind==="3") return {label:"3rd "+CAND[grp].split("").join("/"),cls:"tbd",seed:"3"};
+  const t=(g[grp]||[]).find(x=>x.pos===(kind==="W"?1:2));
+  return {label:t?t.name:"—",cls:"proj",seed:(kind==="W"?"1":"2")+grp};
+}
+function renderBracket(){
+  const g=byGroup(), host=document.getElementById("bracket"); host.innerHTML="";
+  COLS.forEach(([title,ids])=>{
+    const col=document.createElement("div"); col.className="col";
+    let html=`<h4>${title}</h4>`;
+    ids.forEach(id=>{
+      let a,b;
+      if(R32[id]){ a=projTeam(R32[id][0],g); b=projTeam(R32[id][1],g); }
+      else { const [x,y]=KO[id]; a={label:"Winner "+x,cls:"tbd",seed:"M"+x}; b={label:"Winner "+y,cls:"tbd",seed:"M"+y}; }
+      html+=`<div class="mt"><div class="mhd"><div class="mno"><span>Match ${id}</span><span>${DATE[id]||""}</span></div>${LOC[id]?`<div class="mloc">${LOC[id]}</div>`:""}</div>
+        <div class="slot ${a.cls}"><span>${a.label}</span><span class="seed">${a.seed}</span></div>
+        <div class="slot ${b.cls}"><span>${b.label}</span><span class="seed">${b.seed}</span></div></div>`;
+    });
+    col.innerHTML=html; host.appendChild(col);
+  });
+}
+
+function renderTable(){
+  const teams=[...DATA.teams].sort((a,b)=> (sortAsc?1:-1)*((a[sortKey]>b[sortKey])?1:(a[sortKey]<b[sortKey])?-1:0));
+  const th=k=>`class="${sortKey===k?"sorted"+(sortAsc?" asc":""):""}"`;
+  let h=`<thead><tr>
+    <th class="name" data-k="name">Team</th><th data-k="group">Grp</th><th data-k="elo">Elo</th>
+    <th data-k="pts">Pts</th>${ROUNDS.map(([k,l])=>`<th data-k="${k}">${l}</th>`).join("")}</tr></thead><tbody>`;
+  teams.forEach(t=>{
+    h+=`<tr><td class="name">${t.name}</td><td class="code">${t.group}</td><td>${t.elo}</td><td>${t.pts}</td>`;
+    ROUNDS.forEach(([k])=>{const c=heat(t[k]); h+=`<td class="p" style="background:${c.bg};color:${c.fg}">${pct(t[k])}</td>`;});
+    h+="</tr>";
+  });
+  const el=document.getElementById("full"); el.innerHTML=h+"</tbody>";
+  el.querySelectorAll("th").forEach(t=>{
+    t.classList.toggle("sorted",t.dataset.k===sortKey); t.classList.toggle("asc",t.dataset.k===sortKey&&sortAsc);
+    t.onclick=()=>{ const k=t.dataset.k; if(k===sortKey)sortAsc=!sortAsc; else {sortKey=k;sortAsc=(k==="name"||k==="group");} renderTable(); };
+  });
+}
+
+function renderMethod(){
+  const mp=DATA.model_params||{};
+  document.getElementById("method").innerHTML=`
+   <div class="stats">
+     <div class="stat"><div class="v">${DATA.n_sims.toLocaleString()}</div><div class="k">simulations / update</div></div>
+     <div class="stat"><div class="v">0.166</div><div class="k">backtest RPS (skill vs 0.232 baseline)</div></div>
+     <div class="stat"><div class="v">61.8%</div><div class="k">backtest accuracy</div></div>
+     <div class="stat"><div class="v">$0</div><div class="k">running cost</div></div>
+   </div>
+   <p>Every team carries an <b>Elo rating</b> fit from ~49,000 international results since 1872 — weighted by match importance (a World Cup game moves ratings three times as much as a friendly) and margin of victory.</p>
+   <h3>From ratings to scorelines</h3>
+   <p>Two teams' Elo gap feeds an <b>Elo-seeded Poisson model</b> with the <b>Dixon-Coles</b> correction, which produces a full distribution over scorelines — not just win / draw / loss. That's what lets the group-stage goal-difference tiebreakers work. <span class="prose"><code>ρ = ${(mp.rho??0).toFixed(3)}</code></span> nudges low-scoring draws to realistic rates.</p>
+   <h3>Simulating the tournament</h3>
+   <p>Each update runs <b>${DATA.n_sims.toLocaleString()} Monte Carlo simulations</b> of the entire remaining tournament — completed results are fixed, everything else is played out. Group tables use the 2026 <b>head-to-head-first</b> tiebreakers; the eight best third-placed teams are slotted into the round of 32 via the official 495-combination allocation; knockout draws go to a near-coin-flip shootout. Aggregating the runs gives each team's chance of reaching every round.</p>
+   <h3>Data &amp; honesty</h3>
+   <p>All sources are free: <code>martj42</code> for history, <code>worldcup26.ir</code> and <code>football-data.org</code> for live results (cross-checked against each other). Odds update as completed results come in.</p>
+   <p class="note">Early in the tournament the model leans heavily on prior ratings, so there's real uncertainty — a 20% favourite is still four-in-five likely <i>not</i> to win. The goals model reads the rating <i>gap</i>, so it can slightly understate totals when two strong teams meet. This is a personal project, not betting advice.</p>`;
+}
+
+/* ---- tabs / theme / refresh ---- */
+document.getElementById("tabs").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-tab]"); if(!b)return;
+  document.querySelectorAll("nav.tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.querySelectorAll("section.tab").forEach(s=>s.classList.toggle("active",s.id==="tab-"+b.dataset.tab));
+});
+document.getElementById("theme").onclick=()=>{
+  const cur=document.documentElement.getAttribute("data-theme");
+  const next=cur==="dark"?"light":cur==="light"?null:(matchMedia("(prefers-color-scheme:dark)").matches?"light":"dark");
+  if(next)document.documentElement.setAttribute("data-theme",next); else document.documentElement.removeAttribute("data-theme");
+};
+
+function showErr(msg){ const w=document.querySelector(".wrap"); if(w) w.innerHTML=`<div class="err">${msg}</div>`; }
+async function load(){
+  try{
+    const r=await fetch(ODDS_URL+"?t="+Date.now(),{cache:"no-store"});
+    if(!r.ok)throw new Error("HTTP "+r.status);
+    const d=await r.json();
+    const fresh=!DATA||d.as_of!==DATA.as_of||d.n_sims!==DATA.n_sims||d.completed_results!==DATA.completed_results;
+    DATA=d; if(fresh)render();
+  }catch(e){
+    if(!DATA)showErr(`Couldn't load <code>odds.json</code> (${e.message}).<br>Serve the folder over http: <code>python3 -m http.server -d web 4318</code>`);
+  }
+}
+const boot=(()=>{try{return JSON.parse(document.getElementById("bootstrap").textContent)}catch(e){return null}})();
+if(boot&&boot.teams&&boot.teams.length){ DATA=boot; render(); }
+if(location.protocol==="file:"){
+  if(!DATA) showErr("No embedded data yet — run <code>python3 scripts/simulate.py</code> to bake it in, or serve the folder over http.");
+}else{
+  load(); setInterval(load,60000);
+}
+</script>
+</body>
+</html>

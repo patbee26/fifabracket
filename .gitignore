@@ -1,0 +1,13 @@
+# cached downloads + generated artifacts (the seeds in data/*.json ARE committed)
+data/raw/*
+!data/raw/.gitkeep
+
+# secrets
+.env
+
+# python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/

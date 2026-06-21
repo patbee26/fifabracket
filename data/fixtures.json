@@ -1,0 +1,938 @@
+[
+  {
+    "id": "1",
+    "home_team_id": "1",
+    "away_team_id": "2",
+    "group": "A",
+    "matchday": "1",
+    "local_date": "06/11/2026 13:00",
+    "stage": "group"
+  },
+  {
+    "id": "2",
+    "home_team_id": "3",
+    "away_team_id": "4",
+    "group": "A",
+    "matchday": "1",
+    "local_date": "06/11/2026 20:00",
+    "stage": "group"
+  },
+  {
+    "id": "3",
+    "home_team_id": "5",
+    "away_team_id": "6",
+    "group": "B",
+    "matchday": "1",
+    "local_date": "06/12/2026 15:00",
+    "stage": "group"
+  },
+  {
+    "id": "4",
+    "home_team_id": "13",
+    "away_team_id": "14",
+    "group": "D",
+    "matchday": "1",
+    "local_date": "06/12/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "5",
+    "home_team_id": "11",
+    "away_team_id": "12",
+    "group": "C",
+    "matchday": "1",
+    "local_date": "06/13/2026 21:00",
+    "stage": "group"
+  },
+  {
+    "id": "6",
+    "home_team_id": "15",
+    "away_team_id": "16",
+    "group": "D",
+    "matchday": "1",
+    "local_date": "06/13/2026 21:00",
+    "stage": "group"
+  },
+  {
+    "id": "7",
+    "home_team_id": "9",
+    "away_team_id": "10",
+    "group": "C",
+    "matchday": "1",
+    "local_date": "06/13/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "8",
+    "home_team_id": "7",
+    "away_team_id": "8",
+    "group": "B",
+    "matchday": "1",
+    "local_date": "06/13/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "9",
+    "home_team_id": "19",
+    "away_team_id": "20",
+    "group": "E",
+    "matchday": "1",
+    "local_date": "06/14/2026 19:00",
+    "stage": "group"
+  },
+  {
+    "id": "10",
+    "home_team_id": "17",
+    "away_team_id": "18",
+    "group": "E",
+    "matchday": "1",
+    "local_date": "06/14/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "11",
+    "home_team_id": "21",
+    "away_team_id": "22",
+    "group": "F",
+    "matchday": "1",
+    "local_date": "06/14/2026 15:00",
+    "stage": "group"
+  },
+  {
+    "id": "12",
+    "home_team_id": "23",
+    "away_team_id": "24",
+    "group": "F",
+    "matchday": "1",
+    "local_date": "06/14/2026 20:00",
+    "stage": "group"
+  },
+  {
+    "id": "13",
+    "home_team_id": "27",
+    "away_team_id": "28",
+    "group": "G",
+    "matchday": "1",
+    "local_date": "06/15/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "14",
+    "home_team_id": "29",
+    "away_team_id": "30",
+    "group": "H",
+    "matchday": "1",
+    "local_date": "06/15/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "15",
+    "home_team_id": "25",
+    "away_team_id": "26",
+    "group": "G",
+    "matchday": "1",
+    "local_date": "06/15/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "16",
+    "home_team_id": "31",
+    "away_team_id": "32",
+    "group": "H",
+    "matchday": "1",
+    "local_date": "06/15/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "17",
+    "home_team_id": "33",
+    "away_team_id": "34",
+    "group": "I",
+    "matchday": "1",
+    "local_date": "06/16/2026 15:00",
+    "stage": "group"
+  },
+  {
+    "id": "18",
+    "home_team_id": "35",
+    "away_team_id": "36",
+    "group": "I",
+    "matchday": "1",
+    "local_date": "06/16/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "19",
+    "home_team_id": "37",
+    "away_team_id": "38",
+    "group": "J",
+    "matchday": "1",
+    "local_date": "06/16/2026 20:00",
+    "stage": "group"
+  },
+  {
+    "id": "20",
+    "home_team_id": "39",
+    "away_team_id": "40",
+    "group": "J",
+    "matchday": "1",
+    "local_date": "06/16/2026 21:00",
+    "stage": "group"
+  },
+  {
+    "id": "21",
+    "home_team_id": "41",
+    "away_team_id": "42",
+    "group": "K",
+    "matchday": "1",
+    "local_date": "06/17/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "22",
+    "home_team_id": "45",
+    "away_team_id": "46",
+    "group": "L",
+    "matchday": "1",
+    "local_date": "06/17/2026 15:00",
+    "stage": "group"
+  },
+  {
+    "id": "23",
+    "home_team_id": "43",
+    "away_team_id": "44",
+    "group": "K",
+    "matchday": "1",
+    "local_date": "06/17/2026 20:00",
+    "stage": "group"
+  },
+  {
+    "id": "24",
+    "home_team_id": "47",
+    "away_team_id": "48",
+    "group": "L",
+    "matchday": "1",
+    "local_date": "06/17/2026 19:00",
+    "stage": "group"
+  },
+  {
+    "id": "25",
+    "home_team_id": "1",
+    "away_team_id": "3",
+    "group": "A",
+    "matchday": "2",
+    "local_date": "06/18/2026 19:00",
+    "stage": "group"
+  },
+  {
+    "id": "26",
+    "home_team_id": "8",
+    "away_team_id": "6",
+    "group": "B",
+    "matchday": "2",
+    "local_date": "06/18/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "27",
+    "home_team_id": "5",
+    "away_team_id": "7",
+    "group": "B",
+    "matchday": "2",
+    "local_date": "06/18/2026 15:00",
+    "stage": "group"
+  },
+  {
+    "id": "28",
+    "home_team_id": "4",
+    "away_team_id": "2",
+    "group": "A",
+    "matchday": "2",
+    "local_date": "06/18/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "29",
+    "home_team_id": "9",
+    "away_team_id": "11",
+    "group": "C",
+    "matchday": "2",
+    "local_date": "06/19/2026 21:00",
+    "stage": "group"
+  },
+  {
+    "id": "30",
+    "home_team_id": "12",
+    "away_team_id": "10",
+    "group": "C",
+    "matchday": "2",
+    "local_date": "06/19/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "31",
+    "home_team_id": "13",
+    "away_team_id": "15",
+    "group": "D",
+    "matchday": "2",
+    "local_date": "06/19/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "32",
+    "home_team_id": "16",
+    "away_team_id": "14",
+    "group": "D",
+    "matchday": "2",
+    "local_date": "06/19/2026 20:00",
+    "stage": "group"
+  },
+  {
+    "id": "33",
+    "home_team_id": "17",
+    "away_team_id": "19",
+    "group": "E",
+    "matchday": "2",
+    "local_date": "06/20/2026 16:00",
+    "stage": "group"
+  },
+  {
+    "id": "34",
+    "home_team_id": "20",
+    "away_team_id": "18",
+    "group": "E",
+    "matchday": "2",
+    "local_date": "06/20/2026 19:00",
+    "stage": "group"
+  },
+  {
+    "id": "35",
+    "home_team_id": "21",
+    "away_team_id": "23",
+    "group": "F",
+    "matchday": "2",
+    "local_date": "06/20/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "36",
+    "home_team_id": "24",
+    "away_team_id": "22",
+    "group": "F",
+    "matchday": "2",
+    "local_date": "06/20/2026 22:00",
+    "stage": "group"
+  },
+  {
+    "id": "37",
+    "home_team_id": "25",
+    "away_team_id": "27",
+    "group": "G",
+    "matchday": "2",
+    "local_date": "06/21/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "38",
+    "home_team_id": "28",
+    "away_team_id": "26",
+    "group": "G",
+    "matchday": "2",
+    "local_date": "06/21/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "39",
+    "home_team_id": "29",
+    "away_team_id": "31",
+    "group": "H",
+    "matchday": "2",
+    "local_date": "06/21/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "40",
+    "home_team_id": "32",
+    "away_team_id": "30",
+    "group": "H",
+    "matchday": "2",
+    "local_date": "06/21/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "41",
+    "home_team_id": "33",
+    "away_team_id": "35",
+    "group": "I",
+    "matchday": "2",
+    "local_date": "06/22/2026 17:00",
+    "stage": "group"
+  },
+  {
+    "id": "42",
+    "home_team_id": "36",
+    "away_team_id": "34",
+    "group": "I",
+    "matchday": "2",
+    "local_date": "06/22/2026 20:00",
+    "stage": "group"
+  },
+  {
+    "id": "43",
+    "home_team_id": "37",
+    "away_team_id": "39",
+    "group": "J",
+    "matchday": "2",
+    "local_date": "06/22/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "44",
+    "home_team_id": "40",
+    "away_team_id": "38",
+    "group": "J",
+    "matchday": "2",
+    "local_date": "06/22/2026 20:00",
+    "stage": "group"
+  },
+  {
+    "id": "45",
+    "home_team_id": "41",
+    "away_team_id": "43",
+    "group": "K",
+    "matchday": "2",
+    "local_date": "06/23/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "46",
+    "home_team_id": "48",
+    "away_team_id": "46",
+    "group": "L",
+    "matchday": "2",
+    "local_date": "06/23/2026 19:00",
+    "stage": "group"
+  },
+  {
+    "id": "47",
+    "home_team_id": "44",
+    "away_team_id": "42",
+    "group": "K",
+    "matchday": "2",
+    "local_date": "06/23/2026 20:00",
+    "stage": "group"
+  },
+  {
+    "id": "48",
+    "home_team_id": "45",
+    "away_team_id": "47",
+    "group": "L",
+    "matchday": "2",
+    "local_date": "06/23/2026 16:00",
+    "stage": "group"
+  },
+  {
+    "id": "49",
+    "home_team_id": "12",
+    "away_team_id": "9",
+    "group": "C",
+    "matchday": "3",
+    "local_date": "06/24/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "50",
+    "home_team_id": "10",
+    "away_team_id": "11",
+    "group": "C",
+    "matchday": "3",
+    "local_date": "06/24/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "51",
+    "home_team_id": "2",
+    "away_team_id": "3",
+    "group": "A",
+    "matchday": "3",
+    "local_date": "06/24/2026 19:00",
+    "stage": "group"
+  },
+  {
+    "id": "52",
+    "home_team_id": "4",
+    "away_team_id": "1",
+    "group": "A",
+    "matchday": "3",
+    "local_date": "06/24/2026 19:00",
+    "stage": "group"
+  },
+  {
+    "id": "53",
+    "home_team_id": "6",
+    "away_team_id": "7",
+    "group": "B",
+    "matchday": "3",
+    "local_date": "06/24/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "54",
+    "home_team_id": "8",
+    "away_team_id": "5",
+    "group": "B",
+    "matchday": "3",
+    "local_date": "06/24/2026 12:00",
+    "stage": "group"
+  },
+  {
+    "id": "55",
+    "home_team_id": "18",
+    "away_team_id": "19",
+    "group": "E",
+    "matchday": "3",
+    "local_date": "06/25/2026 16:00",
+    "stage": "group"
+  },
+  {
+    "id": "56",
+    "home_team_id": "20",
+    "away_team_id": "17",
+    "group": "E",
+    "matchday": "3",
+    "local_date": "06/25/2026 16:00",
+    "stage": "group"
+  },
+  {
+    "id": "57",
+    "home_team_id": "14",
+    "away_team_id": "15",
+    "group": "D",
+    "matchday": "3",
+    "local_date": "06/25/2026 19:00",
+    "stage": "group"
+  },
+  {
+    "id": "58",
+    "home_team_id": "16",
+    "away_team_id": "13",
+    "group": "D",
+    "matchday": "3",
+    "local_date": "06/25/2026 19:00",
+    "stage": "group"
+  },
+  {
+    "id": "59",
+    "home_team_id": "22",
+    "away_team_id": "23",
+    "group": "F",
+    "matchday": "3",
+    "local_date": "06/25/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "60",
+    "home_team_id": "24",
+    "away_team_id": "21",
+    "group": "F",
+    "matchday": "3",
+    "local_date": "06/25/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "61",
+    "home_team_id": "34",
+    "away_team_id": "35",
+    "group": "I",
+    "matchday": "3",
+    "local_date": "06/26/2026 15:00",
+    "stage": "group"
+  },
+  {
+    "id": "62",
+    "home_team_id": "36",
+    "away_team_id": "33",
+    "group": "I",
+    "matchday": "3",
+    "local_date": "06/26/2026 15:00",
+    "stage": "group"
+  },
+  {
+    "id": "63",
+    "home_team_id": "26",
+    "away_team_id": "27",
+    "group": "G",
+    "matchday": "3",
+    "local_date": "06/26/2026 20:00",
+    "stage": "group"
+  },
+  {
+    "id": "64",
+    "home_team_id": "28",
+    "away_team_id": "25",
+    "group": "G",
+    "matchday": "3",
+    "local_date": "06/26/2026 20:00",
+    "stage": "group"
+  },
+  {
+    "id": "65",
+    "home_team_id": "30",
+    "away_team_id": "31",
+    "group": "H",
+    "matchday": "3",
+    "local_date": "06/26/2026 19:00",
+    "stage": "group"
+  },
+  {
+    "id": "66",
+    "home_team_id": "32",
+    "away_team_id": "29",
+    "group": "H",
+    "matchday": "3",
+    "local_date": "06/26/2026 18:00",
+    "stage": "group"
+  },
+  {
+    "id": "67",
+    "home_team_id": "48",
+    "away_team_id": "45",
+    "group": "L",
+    "matchday": "3",
+    "local_date": "06/27/2026 17:00",
+    "stage": "group"
+  },
+  {
+    "id": "68",
+    "home_team_id": "46",
+    "away_team_id": "47",
+    "group": "L",
+    "matchday": "3",
+    "local_date": "06/27/2026 17:00",
+    "stage": "group"
+  },
+  {
+    "id": "69",
+    "home_team_id": "38",
+    "away_team_id": "39",
+    "group": "J",
+    "matchday": "3",
+    "local_date": "06/27/2026 21:00",
+    "stage": "group"
+  },
+  {
+    "id": "70",
+    "home_team_id": "40",
+    "away_team_id": "37",
+    "group": "J",
+    "matchday": "3",
+    "local_date": "06/27/2026 21:00",
+    "stage": "group"
+  },
+  {
+    "id": "71",
+    "home_team_id": "44",
+    "away_team_id": "41",
+    "group": "K",
+    "matchday": "3",
+    "local_date": "06/27/2026 19:30",
+    "stage": "group"
+  },
+  {
+    "id": "72",
+    "home_team_id": "42",
+    "away_team_id": "43",
+    "group": "K",
+    "matchday": "3",
+    "local_date": "06/27/2026 19:30",
+    "stage": "group"
+  },
+  {
+    "id": "73",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "06/28/2026 12:00",
+    "stage": "r32"
+  },
+  {
+    "id": "74",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "06/29/2026 16:30",
+    "stage": "r32"
+  },
+  {
+    "id": "75",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "06/29/2026 19:00",
+    "stage": "r32"
+  },
+  {
+    "id": "76",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "06/29/2026 12:00",
+    "stage": "r32"
+  },
+  {
+    "id": "77",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "06/30/2026 17:00",
+    "stage": "r32"
+  },
+  {
+    "id": "78",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "06/30/2026 12:00",
+    "stage": "r32"
+  },
+  {
+    "id": "79",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "06/30/2026 19:00",
+    "stage": "r32"
+  },
+  {
+    "id": "80",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "07/01/2026 12:00",
+    "stage": "r32"
+  },
+  {
+    "id": "81",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "07/01/2026 17:00",
+    "stage": "r32"
+  },
+  {
+    "id": "82",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "07/01/2026 13:00",
+    "stage": "r32"
+  },
+  {
+    "id": "83",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "07/02/2026 19:00",
+    "stage": "r32"
+  },
+  {
+    "id": "84",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "07/02/2026 12:00",
+    "stage": "r32"
+  },
+  {
+    "id": "85",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "07/02/2026 20:00",
+    "stage": "r32"
+  },
+  {
+    "id": "86",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "07/03/2026 18:00",
+    "stage": "r32"
+  },
+  {
+    "id": "87",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "07/03/2026 20:30",
+    "stage": "r32"
+  },
+  {
+    "id": "88",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R32",
+    "matchday": "4",
+    "local_date": "07/03/2026 13:00",
+    "stage": "r32"
+  },
+  {
+    "id": "89",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R16",
+    "matchday": "5",
+    "local_date": "07/04/2026 17:00",
+    "stage": "r16"
+  },
+  {
+    "id": "90",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R16",
+    "matchday": "5",
+    "local_date": "07/04/2026 12:00",
+    "stage": "r16"
+  },
+  {
+    "id": "91",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R16",
+    "matchday": "5",
+    "local_date": "07/05/2026 16:00",
+    "stage": "r16"
+  },
+  {
+    "id": "92",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R16",
+    "matchday": "5",
+    "local_date": "07/05/2026 18:00",
+    "stage": "r16"
+  },
+  {
+    "id": "93",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R16",
+    "matchday": "5",
+    "local_date": "07/06/2026 14:00",
+    "stage": "r16"
+  },
+  {
+    "id": "94",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R16",
+    "matchday": "5",
+    "local_date": "07/06/2026 17:00",
+    "stage": "r16"
+  },
+  {
+    "id": "95",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R16",
+    "matchday": "5",
+    "local_date": "07/07/2026 12:00",
+    "stage": "r16"
+  },
+  {
+    "id": "96",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "R16",
+    "matchday": "5",
+    "local_date": "07/07/2026 13:00",
+    "stage": "r16"
+  },
+  {
+    "id": "97",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "QF",
+    "matchday": "6",
+    "local_date": "07/09/2026 16:00",
+    "stage": "qf"
+  },
+  {
+    "id": "98",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "QF",
+    "matchday": "6",
+    "local_date": "07/10/2026 12:00",
+    "stage": "qf"
+  },
+  {
+    "id": "99",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "QF",
+    "matchday": "6",
+    "local_date": "07/11/2026 17:00",
+    "stage": "qf"
+  },
+  {
+    "id": "100",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "QF",
+    "matchday": "6",
+    "local_date": "07/11/2026 20:00",
+    "stage": "qf"
+  },
+  {
+    "id": "101",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "SF",
+    "matchday": "7",
+    "local_date": "07/14/2026 14:00",
+    "stage": "sf"
+  },
+  {
+    "id": "102",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "SF",
+    "matchday": "7",
+    "local_date": "07/15/2026 15:00",
+    "stage": "sf"
+  },
+  {
+    "id": "103",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "3RD",
+    "matchday": "8",
+    "local_date": "07/18/2026 17:00",
+    "stage": "third"
+  },
+  {
+    "id": "104",
+    "home_team_id": "0",
+    "away_team_id": "0",
+    "group": "FINAL",
+    "matchday": "9",
+    "local_date": "07/19/2026 15:00",
+    "stage": "final"
+  }
+]

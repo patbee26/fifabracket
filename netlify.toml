@@ -1,0 +1,11 @@
+# Netlify config — static site, no build step. Publishes the web/ folder.
+[build]
+  publish = "web"
+  command = ""
+
+# Always revalidate the data file so a redeploy serves fresh odds immediately
+# (the page also cache-busts its fetch, but this covers direct hits).
+[[headers]]
+  for = "/odds.json"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

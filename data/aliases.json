@@ -1,0 +1,22 @@
+{
+  "_comment": "Cross-source name variants -> FIFA code. The 48 canonical name_en values in teams.json are mapped automatically; this file only holds the KNOWN divergent spellings used by martj42, football-data.org, etc. Matching is accent/case/punctuation-insensitive (see normalize.slugify), so 'Curacao' already resolves via the canonical 'Curaçao' — entries here are for genuinely different names. Add a row whenever scripts/fetch_data.py reports an unmapped name.",
+  "Korea Republic": "KOR",
+  "Korea, South": "KOR",
+  "Republic of Korea": "KOR",
+  "Czechia": "CZE",
+  "USA": "USA",
+  "United States of America": "USA",
+  "Turkiye": "TUR",
+  "Türkiye": "TUR",
+  "Cote d'Ivoire": "CIV",
+  "Côte d'Ivoire": "CIV",
+  "IR Iran": "IRN",
+  "Iran Islamic Republic": "IRN",
+  "Cabo Verde": "CPV",
+  "DR Congo": "COD",
+  "Congo DR": "COD",
+  "Democratic Republic of Congo": "COD",
+  "Bosnia & Herzegovina": "BIH",
+  "Bosnia-Herzegovina": "BIH",
+  "Holland": "NED"
+}
