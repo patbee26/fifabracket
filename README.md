@@ -96,8 +96,10 @@ update"** card (results reconstructed from the `odds.json` vs `odds.prev.json` d
 qualification swings), and a **team drill-down** (tap any team → full round-by-round path +
 why its odds moved). A **matchup explorer** (pick a team + round → every possible opponent
 with the draw likelihood and a live head-to-head "advance %" from the model, served from
-`matchups.json`) rounds it out. Deploy = publish the `web/` folder; the pipeline (Phase 3)
-regenerates `web/odds.json` + `web/odds.prev.json` + `web/matchups.json` in place.
+`matchups.json`) and a **"what has to happen"** scenarios page (each team's clinch/eliminate
+status + chance to qualify conditional on its next group result, from `scenarios.json`) round
+it out. Deploy = publish the `web/` folder; the pipeline (Phase 3) regenerates `web/odds.json`
++ `web/odds.prev.json` + `web/matchups.json` + `web/scenarios.json` in place.
 
 `simulate.py` bakes the latest odds into `index.html` itself (a `<script id="bootstrap">`
 block), so the page works **opened directly** (double-click → `file://`) *and* served.

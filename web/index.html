@@ -78,6 +78,19 @@
   .oppfill{height:100%;background:rgba(var(--accent-rgb),.5)}
   .opppct{text-align:right;font-weight:700;font-size:13.5px}
   .adv{font-size:11.5px;font-weight:600;text-align:right;white-space:nowrap}
+
+  /* clinching scenarios */
+  .scn-team{padding:9px 0 10px;border-top:1px solid var(--line)}
+  .scn-team:first-child{border-top:none;padding-top:2px}
+  .scn-row{display:flex;align-items:center;gap:8px}
+  .scn-name{font-weight:600;font-size:14px;flex:1 1 auto;display:flex;align-items:center;gap:7px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .scn-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap;flex:none}
+  .scn-badge.in{background:rgba(var(--accent-rgb),.15);color:var(--qual)}
+  .scn-badge.out{background:rgba(178,59,59,.14);color:var(--out)}
+  .scn-badge.alive{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+  .scn-detail{font-size:12.5px;color:var(--muted);margin-top:5px;display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+  .scn-detail b{font-weight:600;font-variant-numeric:tabular-nums}
+  .scn-phrase{font-size:12.5px;color:var(--ink);margin-top:3px;opacity:.8}
   .pct{text-align:right;font-weight:700;font-size:14.5px}
   .flash{animation:flash 1.4s ease-out}
   @keyframes flash{0%{background:rgba(var(--accent-rgb),.4)}100%{background:transparent}}
@@ -203,6 +216,7 @@
   <nav class="tabs" id="tabs" role="tablist">
     <button role="tab" aria-selected="true" data-tab="race">Title race</button>
     <button role="tab" aria-selected="false" data-tab="groups">Groups</button>
+    <button role="tab" aria-selected="false" data-tab="scenarios">Scenarios</button>
     <button role="tab" aria-selected="false" data-tab="bracket">Bracket</button>
     <button role="tab" aria-selected="false" data-tab="matchups">Matchups</button>
     <button role="tab" aria-selected="false" data-tab="table">All teams</button>
@@ -223,6 +237,12 @@
     <h2 class="sec">Group stage · qualification odds</h2>
     <p class="lead">Top two of each group advance automatically; the eight best third-placed teams also reach the round of 32. Bars show each team's modelled chance of qualifying.</p>
     <div class="grid" id="groups"></div>
+  </section>
+
+  <section class="tab" id="tab-scenarios" role="tabpanel">
+    <h2 class="sec">What has to happen</h2>
+    <p class="lead">Each team's qualification status, and — for those still in the race — how their chance to reach the knockouts changes with the result of their next group game. From the 10,000 simulations.</p>
+    <div id="scenarios"></div>
   </section>
 
   <section class="tab" id="tab-bracket" role="tabpanel">
@@ -1090,7 +1110,7 @@
 <script>
 const ODDS_URL = "odds.json";
 const ROUNDS = [["p_qualify","R32"],["p_r16","R16"],["p_qf","QF"],["p_sf","SF"],["p_final","Final"],["p_champion","Win"]];
-let DATA=null, PREV=null, MU=null, prevWin={}, sortKey="p_champion", sortAsc=false;
+let DATA=null, PREV=null, MU=null, SCN=null, prevWin={}, sortKey="p_champion", sortAsc=false;
 let muTeam=null, muRound="r16";
 
 const pct = p => (p*100).toFixed(p>=0.0995?0:1)+"%";
@@ -1251,7 +1271,7 @@ function render(){
   const m=document.getElementById("meta");
   m.innerHTML=`Results through <b>${fmtDate(DATA.as_of)}</b> · <b>${DATA.completed_results}</b> of 72 group games · <b>${DATA.n_sims.toLocaleString()}</b> simulations`;
   renderCertainty(); renderChanged();
-  renderRace(); renderGroups(); renderBracket(); renderMatchups(); renderTable(); renderMethod();
+  renderRace(); renderGroups(); renderScenarios(); renderBracket(); renderMatchups(); renderTable(); renderMethod();
   document.getElementById("foot").innerHTML=
     `Model: Elo + Dixon-Coles Poisson + Monte Carlo. Free data (martj42 · worldcup26.ir · football-data.org). Personal, non-commercial. Not betting advice.`;
   DATA.teams.forEach(t=>prevWin[t.code]=t.p_champion);
@@ -1310,6 +1330,52 @@ function projTeam(slot,g){
   if(kind==="3") return {label:"3rd "+CAND[grp].split("").join("/"),cls:"tbd",seed:"3"};
   const t=(g[grp]||[]).find(x=>x.pos===(kind==="W"?1:2));
   return {label:t?t.name:"—",cls:"proj",seed:(kind==="W"?"1":"2")+grp,code:t?t.code:null};
+}
+function scnPhrase(b){
+  const p=r=>{const x=b[r];return x&&x[1]?x[0]/x[1]:0;};
+  const w=p('W'),d=p('D'),l=p('L');
+  if(l>=0.9) return "Through barring a collapse — even a loss is usually enough.";
+  if(d>=0.9) return "A draw should be enough; a win locks it.";
+  if(w>=0.95){
+    if(d>=0.5) return "A win seals it; a draw probably does too.";
+    if(d>=0.15) return "Win to be safe — a draw is a coin-flip.";
+    return "Win and they're through; anything less and they'll likely need help.";
+  }
+  if(w>=0.5) return "Need a win — and maybe favours in other groups.";
+  return "A long shot: realistically need a win and results elsewhere.";
+}
+function renderScenarios(){
+  const host=document.getElementById("scenarios");
+  if(!SCN||!SCN.teams){ host.innerHTML=`<p class="lead">Scenario data isn't available${location.protocol==="file:"?" when opened as a file — serve over http to use this":" yet"}.</p>`; return; }
+  const g=byGroup(), grid=document.createElement("div"); grid.className="grid";
+  const cls=v=>v>=67?'up':v<=33?'down':'';
+  Object.keys(g).sort().forEach(letter=>{
+    const rows=g[letter].map(t=>{
+      const s=SCN.teams[t.code]||{}, n=SCN.n_sims, q=s.qualify||0;
+      let badge, detail="";
+      if(q>=n) badge=`<span class="scn-badge in" data-tip="Mathematically through to the knockout stage.">Through</span>`;
+      else if(q<=0) badge=`<span class="scn-badge out" data-tip="Can no longer qualify in any simulation.">Eliminated</span>`;
+      else {
+        badge=`<span class="scn-badge alive" data-tip="${TIPS.qual}">${Math.round(q/n*100)}% to qualify</span>`;
+        const b=s.branches, opp=s.next_opp;
+        if(b&&opp){
+          const oc=DATA.teams.find(x=>x.code===opp), on=oc?oc.name:opp;
+          const pc=r=>{const x=b[r];return x&&x[1]?Math.round(x[0]/x[1]*100):0;};
+          const W=pc('W'),D=pc('D'),L=pc('L');
+          detail=`<div class="scn-detail" data-tip="Their chance to qualify depending on the result of their next group game.">`+
+            `<span>Next vs ${flag(opp,14)} ${on}</span><b class="${cls(W)}">win ${W}%</b><b class="${cls(D)}">draw ${D}%</b><b class="${cls(L)}">lose ${L}%</b></div>`+
+            `<div class="scn-phrase">${scnPhrase(b)}</div>`;
+        } else if(opp===null){
+          detail=`<div class="scn-detail">All group games played — now hinges on other groups.</div>`;
+        }
+      }
+      return `<div class="scn-team"><div class="scn-row"><span class="scn-name">${flag(t.code,18)}${t.name}</span>${badge}</div>${detail}</div>`;
+    }).join("");
+    const card=document.createElement("div"); card.className="card";
+    card.innerHTML=`<h3>Group ${letter} <span>what has to happen</span></h3>${rows}`;
+    grid.appendChild(card);
+  });
+  host.innerHTML=""; host.appendChild(grid);
 }
 function seedTip(s){
   if(s==="3") return "A third-placed team — assigned via the FIFA allocation table";
@@ -1453,6 +1519,7 @@ async function load(){
     const d=await r.json();
     try{ const rp=await fetch("odds.prev.json?t="+Date.now(),{cache:"no-store"}); if(rp.ok) PREV=await rp.json(); }catch(e){}
     if(!MU){ try{ const rm=await fetch("matchups.json?t="+Date.now(),{cache:"no-store"}); if(rm.ok) MU=await rm.json(); }catch(e){} }
+    try{ const rs=await fetch("scenarios.json?t="+Date.now(),{cache:"no-store"}); if(rs.ok) SCN=await rs.json(); }catch(e){}
     DATA=d; render();   // always re-render: picks up the prev snapshot + flashes any moves
   }catch(e){
     if(!DATA)showErr(`Couldn't load <code>odds.json</code> (${e.message}).<br>Serve the folder over http: <code>python3 -m http.server -d web 4318</code>`);

@@ -143,6 +143,7 @@ def simulate_once(sampler: Sampler, group_fixtures: Dict[str, List[Pair]],
     runners: Dict[str, str] = {}
     third_team: Dict[str, str] = {}
     third_stat: Dict[str, Stat] = {}
+    gscores: Dict[Pair, Tuple[int, int]] = {}   # sorted pair -> (score_lo, score_hi) this sim
 
     # --- group stage ---
     for g, fixtures in group_fixtures.items():
@@ -156,6 +157,8 @@ def simulate_once(sampler: Sampler, group_fixtures: Dict[str, List[Pair]],
             else:
                 hs, as_ = sampler.score(a, b)
             played.append((a, b, hs, as_))
+            lo, hi = key
+            gscores[key] = (hs, as_) if (a, b) == (lo, hi) else (as_, hs)
         order = standings.rank_group(members[g], played, elo)
         winners[g], runners[g], third = order[0], order[1], order[2]
         third_team[g] = third
@@ -213,7 +216,7 @@ def simulate_once(sampler: Sampler, group_fixtures: Dict[str, List[Pair]],
         "final": {match_winner[m] for m in bracket.SF_IDS},
         "champion": {match_winner[bracket.FINAL_ID]},
     }
-    return reached, opp
+    return reached, opp, gscores
 
 
 def _ko_winner(a: str, b: str, mid: int, completed: Completed, sampler: Sampler) -> str:
@@ -227,19 +230,39 @@ def _ko_winner(a: str, b: str, mid: int, completed: Completed, sampler: Sampler)
     return sampler.advance(a, b)
 
 
+def _next_games(group_fixtures: Dict[str, List[Pair]], completed: Completed) -> Dict[str, Pair]:
+    """Each team's next unplayed group fixture (sorted pair), or absent if all played.
+    Fixtures are in schedule order, so the first unplayed one is the team's next game."""
+    nxt: Dict[str, Pair] = {}
+    for fixtures in group_fixtures.values():
+        for a, b in fixtures:
+            key = _pair(a, b)
+            if key in completed:
+                continue
+            nxt.setdefault(a, key)
+            nxt.setdefault(b, key)
+    return nxt
+
+
 def run(ratings: Dict[str, float], goals: GoalsModel, completed: Completed,
         n: int = config.DEFAULT_SIMS, seed: int = 12345):
-    """Returns (probs, n, matchups). matchups[code][round] = {opponent_code: count}."""
+    """Returns (probs, n, matchups, scenarios).
+    matchups[code][round] = {opponent_code: count};
+    scenarios[code] = {qualify, next_opp, branches:{W/D/L:[qualified,total]}} — the
+    chance to qualify conditional on each result of the team's next group game."""
     rng = random.Random(seed)
     sampler = Sampler(ratings, goals, rng)
     group_fixtures = load_group_fixtures()
     members = _group_members()
     elo = lambda code: ratings.get(code, 1500.0)
+    next_game = _next_games(group_fixtures, completed)
 
     counts = {code: {r: 0 for r in ROUNDS} for code in ratings}
     matchups = {code: {r: {} for r in MATCH_ROUNDS} for code in ratings}
+    branches = {code: {"W": [0, 0], "D": [0, 0], "L": [0, 0]} for code in next_game}
     for _ in range(n):
-        reached, opp = simulate_once(sampler, group_fixtures, members, completed, elo)
+        reached, opp, gscores = simulate_once(sampler, group_fixtures, members, completed, elo)
+        qset = reached["qualify"]
         for rnd, teams in reached.items():
             for t in teams:
                 counts[t][rnd] += 1
@@ -247,6 +270,23 @@ def run(ratings: Dict[str, float], goals: GoalsModel, completed: Completed,
             m = matchups[code]
             for rnd, oc in rounds.items():
                 m[rnd][oc] = m[rnd].get(oc, 0) + 1
+        for code, ng in next_game.items():
+            sc = gscores.get(ng)
+            if not sc:
+                continue
+            lo, _hi = ng
+            my, ops = (sc[0], sc[1]) if code == lo else (sc[1], sc[0])
+            r = "W" if my > ops else ("D" if my == ops else "L")
+            bucket = branches[code][r]
+            bucket[1] += 1
+            if code in qset:
+                bucket[0] += 1
 
     probs = {code: {r: counts[code][r] / n for r in ROUNDS} for code in ratings}
-    return probs, n, matchups
+    scenarios = {}
+    for code in ratings:
+        ng = next_game.get(code)
+        opp_code = (ng[1] if code == ng[0] else ng[0]) if ng else None
+        scenarios[code] = {"qualify": counts[code]["qualify"], "next_opp": opp_code,
+                           "branches": branches.get(code)}
+    return probs, n, matchups, scenarios
