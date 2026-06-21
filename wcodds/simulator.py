@@ -23,6 +23,19 @@ Pair = Tuple[str, str]                       # sorted (code, code)
 Completed = Dict[Pair, Tuple[int, int]]      # sorted-pair -> (score_lo, score_hi)
 ROUNDS = ("qualify", "r16", "qf", "sf", "final", "champion")
 
+# knockout match-id -> round label, for tracking who-plays-who (the matchup explorer)
+MATCH_ROUNDS = ("r32", "r16", "qf", "sf", "final")
+ROUND_OF: Dict[int, str] = {}
+for _m in bracket.R32_IDS:
+    ROUND_OF[_m] = "r32"
+for _m in bracket.R16_IDS:
+    ROUND_OF[_m] = "r16"
+for _m in bracket.QF_IDS:
+    ROUND_OF[_m] = "qf"
+for _m in bracket.SF_IDS:
+    ROUND_OF[_m] = "sf"
+ROUND_OF[bracket.FINAL_ID] = "final"
+
 
 def _pair(a: str, b: str) -> Pair:
     return (a, b) if a <= b else (b, a)
@@ -166,10 +179,13 @@ def simulate_once(sampler: Sampler, group_fixtures: Dict[str, List[Pair]],
     match_winner: Dict[int, str] = {}
     match_loser: Dict[int, str] = {}
     qualified = set()
+    opp: Dict[str, Dict[str, str]] = {}   # code -> {round -> opponent code} this sim
 
     for mid, (sa, sb) in bracket.R32.items():
         a, b = resolve_slot(sa), resolve_slot(sb)
         qualified.add(a); qualified.add(b)
+        opp.setdefault(a, {})["r32"] = b
+        opp.setdefault(b, {})["r32"] = a
         w = _ko_winner(a, b, mid, completed, sampler)
         match_winner[mid] = w
         match_loser[mid] = b if w == a else a
@@ -181,11 +197,15 @@ def simulate_once(sampler: Sampler, group_fixtures: Dict[str, List[Pair]],
         (ka, ra), (kb, rb) = bracket.KO_TREE[mid]
         a = match_winner[ra] if ka == "W" else match_loser[ra]
         b = match_winner[rb] if kb == "W" else match_loser[rb]
+        rnd = ROUND_OF.get(mid)
+        if rnd:
+            opp.setdefault(a, {})[rnd] = b
+            opp.setdefault(b, {})[rnd] = a
         w = _ko_winner(a, b, mid, completed, sampler)
         match_winner[mid] = w
         match_loser[mid] = b if w == a else a
 
-    return {
+    reached = {
         "qualify": qualified,
         "r16": {match_winner[m] for m in bracket.R32_IDS},
         "qf": {match_winner[m] for m in bracket.R16_IDS},
@@ -193,6 +213,7 @@ def simulate_once(sampler: Sampler, group_fixtures: Dict[str, List[Pair]],
         "final": {match_winner[m] for m in bracket.SF_IDS},
         "champion": {match_winner[bracket.FINAL_ID]},
     }
+    return reached, opp
 
 
 def _ko_winner(a: str, b: str, mid: int, completed: Completed, sampler: Sampler) -> str:
@@ -207,7 +228,8 @@ def _ko_winner(a: str, b: str, mid: int, completed: Completed, sampler: Sampler)
 
 
 def run(ratings: Dict[str, float], goals: GoalsModel, completed: Completed,
-        n: int = config.DEFAULT_SIMS, seed: int = 12345) -> Tuple[Dict[str, Dict[str, float]], int]:
+        n: int = config.DEFAULT_SIMS, seed: int = 12345):
+    """Returns (probs, n, matchups). matchups[code][round] = {opponent_code: count}."""
     rng = random.Random(seed)
     sampler = Sampler(ratings, goals, rng)
     group_fixtures = load_group_fixtures()
@@ -215,11 +237,16 @@ def run(ratings: Dict[str, float], goals: GoalsModel, completed: Completed,
     elo = lambda code: ratings.get(code, 1500.0)
 
     counts = {code: {r: 0 for r in ROUNDS} for code in ratings}
+    matchups = {code: {r: {} for r in MATCH_ROUNDS} for code in ratings}
     for _ in range(n):
-        reached = simulate_once(sampler, group_fixtures, members, completed, elo)
+        reached, opp = simulate_once(sampler, group_fixtures, members, completed, elo)
         for rnd, teams in reached.items():
             for t in teams:
                 counts[t][rnd] += 1
+        for code, rounds in opp.items():
+            m = matchups[code]
+            for rnd, oc in rounds.items():
+                m[rnd][oc] = m[rnd].get(oc, 0) + 1
 
     probs = {code: {r: counts[code][r] / n for r in ROUNDS} for code in ratings}
-    return probs, n
+    return probs, n, matchups

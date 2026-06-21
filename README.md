@@ -90,12 +90,14 @@ web/       index.html (static dashboard) + odds.json (+ odds.prev.json) — the 
 
 The site is **dependency-free** (one `index.html`, vanilla JS, no build step): title-race
 board, live group standings, projected bracket, sortable 48-team table, methodology page,
-light/dark, and a 60-second auto-refresh that flashes changed odds. It also explains itself
-(Phase 5): a **tournament-progress certainty meter**, a **"since the last update"** card
-(results reconstructed from the `odds.json` vs `odds.prev.json` diff + biggest qualification
-swings), and a **team drill-down** (tap any team → full round-by-round path + why its odds
-moved). Deploy = publish the `web/` folder; the pipeline (Phase 3) regenerates
-`web/odds.json` + `web/odds.prev.json` in place.
+light/dark, country flags, and a 60-second auto-refresh that flashes changed odds. It also
+explains itself (Phase 5): a **tournament-progress certainty meter**, a **"since the last
+update"** card (results reconstructed from the `odds.json` vs `odds.prev.json` diff + biggest
+qualification swings), and a **team drill-down** (tap any team → full round-by-round path +
+why its odds moved). A **matchup explorer** (pick a team + round → every possible opponent
+with the draw likelihood and a live head-to-head "advance %" from the model, served from
+`matchups.json`) rounds it out. Deploy = publish the `web/` folder; the pipeline (Phase 3)
+regenerates `web/odds.json` + `web/odds.prev.json` + `web/matchups.json` in place.
 
 `simulate.py` bakes the latest odds into `index.html` itself (a `<script id="bootstrap">`
 block), so the page works **opened directly** (double-click → `file://`) *and* served.

@@ -56,7 +56,7 @@ def main() -> int:
     completed = load_completed(args.refresh)
 
     t0 = time.time()
-    probs, n = simulator.run(ratings, goals, completed, n=args.sims, seed=args.seed)
+    probs, n, matchups = simulator.run(ratings, goals, completed, n=args.sims, seed=args.seed)
     dt = time.time() - t0
 
     cur = simulator.current_standings(completed, ratings)
@@ -75,6 +75,18 @@ def main() -> int:
         } for t in teams],
     }
     payload_json = json.dumps(out, ensure_ascii=False, indent=2)
+
+    # matchup explorer data: per team, per round, the distribution of opponents faced
+    mu = {"n_sims": n, "teams": {}}
+    for t in teams:
+        rounds = {}
+        for rnd in simulator.MATCH_ROUNDS:
+            opps = matchups[t.code][rnd]
+            if opps:
+                rounds[rnd] = {"reach": sum(opps.values()), "opps": opps}
+        mu["teams"][t.code] = rounds
+    matchups_json = json.dumps(mu, ensure_ascii=False, separators=(",", ":"))
+
     web_dir = config.BASE_DIR / "web"
     web_odds = web_dir / "odds.json"
 
@@ -91,10 +103,12 @@ def main() -> int:
             return 0
 
     config.ODDS_OUT.write_text(payload_json, encoding="utf-8")
+    (config.RAW_DIR / "matchups.json").write_text(matchups_json, encoding="utf-8")
     if web_dir.exists():
         if web_odds.exists():   # keep the prior run for the "why it moved" diff (Phase 5)
             (web_dir / "odds.prev.json").write_text(web_odds.read_text(encoding="utf-8"), encoding="utf-8")
         web_odds.write_text(payload_json, encoding="utf-8")
+        (web_dir / "matchups.json").write_text(matchups_json, encoding="utf-8")
         # bake the data into index.html's <script id="bootstrap"> so the page also works
         # opened directly as a file:// (browsers block fetch of a local odds.json).
         web_index = web_dir / "index.html"

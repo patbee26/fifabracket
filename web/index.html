@@ -63,6 +63,21 @@
   .barlabel{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 12px;font-weight:600;font-size:14px}
   .barlabel .code{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:600}
   .flag{height:auto;border-radius:2px;vertical-align:-2px;box-shadow:0 0 0 .5px rgba(0,0,0,.18);flex:none}
+
+  /* matchup explorer */
+  .muctrl{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .muctrl label{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);display:flex;flex-direction:column;gap:6px;font-weight:700}
+  .muctrl select{font:inherit;font-size:14px;text-transform:none;letter-spacing:0;font-weight:500;padding:9px 11px;border:1px solid var(--line2);border-radius:8px;background:var(--surface);color:var(--ink);min-width:190px;cursor:pointer}
+  .muhead{display:flex;align-items:center;gap:13px;margin-bottom:16px}
+  .mu-h1{font-size:21px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+  .mu-sub{font-size:13px;color:var(--muted);margin-top:2px}
+  .oppgrid{display:grid;gap:6px}
+  .opprow{display:grid;grid-template-columns:minmax(110px,1.2fr) 2fr 44px 62px;align-items:center;gap:11px}
+  .oppname{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .oppbar{background:var(--surface);border:1px solid var(--line);border-radius:6px;height:22px;overflow:hidden}
+  .oppfill{height:100%;background:rgba(var(--accent-rgb),.5)}
+  .opppct{text-align:right;font-weight:700;font-size:13.5px}
+  .adv{font-size:11.5px;font-weight:600;text-align:right;white-space:nowrap}
   .pct{text-align:right;font-weight:700;font-size:14.5px}
   .flash{animation:flash 1.4s ease-out}
   @keyframes flash{0%{background:rgba(var(--accent-rgb),.4)}100%{background:transparent}}
@@ -178,6 +193,7 @@
     <button role="tab" aria-selected="true" data-tab="race">Title race</button>
     <button role="tab" aria-selected="false" data-tab="groups">Groups</button>
     <button role="tab" aria-selected="false" data-tab="bracket">Bracket</button>
+    <button role="tab" aria-selected="false" data-tab="matchups">Matchups</button>
     <button role="tab" aria-selected="false" data-tab="table">All teams</button>
     <button role="tab" aria-selected="false" data-tab="method">Method</button>
   </nav>
@@ -202,6 +218,12 @@
     <h2 class="sec">Projected bracket</h2>
     <p class="lead">The fixed 2026 knockout structure. Group slots are filled by current standings and firm up as the group stage finishes; third-placed slots resolve via the FIFA allocation table.</p>
     <div class="bracket" id="bracket"></div>
+  </section>
+
+  <section class="tab" id="tab-matchups" role="tabpanel">
+    <h2 class="sec">Matchup explorer</h2>
+    <p class="lead">Pick a team and a round to see every opponent they could meet — and how likely each draw is — across the 10,000 simulations. Click an opponent for their details.</p>
+    <div id="matchups"></div>
   </section>
 
   <section class="tab" id="tab-table" role="tabpanel">
@@ -1056,7 +1078,8 @@
 <script>
 const ODDS_URL = "odds.json";
 const ROUNDS = [["p_qualify","R32"],["p_r16","R16"],["p_qf","QF"],["p_sf","SF"],["p_final","Final"],["p_champion","Win"]];
-let DATA=null, PREV=null, prevWin={}, sortKey="p_champion", sortAsc=false;
+let DATA=null, PREV=null, MU=null, prevWin={}, sortKey="p_champion", sortAsc=false;
+let muTeam=null, muRound="r16";
 
 const pct = p => (p*100).toFixed(p>=0.0995?0:1)+"%";
 const pctd = p => (p*100).toFixed(1)+"%";
@@ -1193,7 +1216,7 @@ function render(){
   const m=document.getElementById("meta");
   m.innerHTML=`Results through <b>${fmtDate(DATA.as_of)}</b> · <b>${DATA.completed_results}</b> of 72 group games · <b>${DATA.n_sims.toLocaleString()}</b> simulations`;
   renderCertainty(); renderChanged();
-  renderRace(); renderGroups(); renderBracket(); renderTable(); renderMethod();
+  renderRace(); renderGroups(); renderBracket(); renderMatchups(); renderTable(); renderMethod();
   document.getElementById("foot").innerHTML=
     `Model: Elo + Dixon-Coles Poisson + Monte Carlo. Free data (martj42 · worldcup26.ir · football-data.org). Personal, non-commercial. Not betting advice.`;
   DATA.teams.forEach(t=>prevWin[t.code]=t.p_champion);
@@ -1307,6 +1330,64 @@ function renderMethod(){
    <p class="note">Early in the tournament the model leans heavily on prior ratings, so there's real uncertainty — a 20% favourite is still four-in-five likely <i>not</i> to win. The goals model reads the rating <i>gap</i>, so it can slightly understate totals when two strong teams meet. This is a personal project, not betting advice.</p>`;
 }
 
+/* ---- matchup explorer ---- */
+const ROUND_LABEL={r32:"Round of 32",r16:"Round of 16",qf:"Quarter-final",sf:"Semi-final",final:"Final"};
+const HOST=new Set(["USA","MEX","CAN"]);
+const FACT=[1,1,2,6,24,120,720,5040,40320,362880,3628800];
+const poisP=(k,l)=>Math.exp(-l)*Math.pow(l,k)/FACT[k];
+function dcTau(i,j,lh,la,rho){ if(i===0&&j===0)return 1-lh*la*rho; if(i===0&&j===1)return 1+lh*rho; if(i===1&&j===0)return 1+la*rho; if(i===1&&j===1)return 1-rho; return 1; }
+function eloOf(code){ const t=DATA.teams.find(x=>x.code===code); return t?t.elo:null; }
+// model head-to-head: probability `ca` advances past `cb` in a knockout tie
+function advanceProb(ca,cb){
+  const mp=DATA.model_params, ea=eloOf(ca), eb=eloOf(cb);
+  if(!mp||ea==null||eb==null||mp.b_elo==null) return null;
+  const diff=(ea-eb)/100, cl=x=>Math.max(-8,Math.min(8,x));
+  const ah=HOST.has(ca)&&!HOST.has(cb), bh=HOST.has(cb)&&!HOST.has(ca);
+  const lh=Math.exp(cl(mp.b0+mp.b_elo*diff+(ah?mp.b_home:0)));
+  const la=Math.exp(cl(mp.b0-mp.b_elo*diff+(bh?mp.b_home:0)));
+  let pa=0,pd=0,pb=0;
+  for(let i=0;i<=10;i++){ const pi=poisP(i,lh); for(let j=0;j<=10;j++){ let p=dcTau(i,j,lh,la,mp.rho)*pi*poisP(j,la); if(p<0)p=0; if(i>j)pa+=p; else if(i===j)pd+=p; else pb+=p; } }
+  const tot=pa+pd+pb||1; pd/=tot; pa/=tot;
+  const we=1/(1+Math.pow(10,-(ea-eb)/400)), pen=0.5+(we-0.5)*0.5;
+  return pa+pd*pen;
+}
+function renderMatchups(){
+  const host=document.getElementById("matchups");
+  if(!MU||!MU.teams){ host.innerHTML=`<p class="lead">Matchup data isn't available${location.protocol==="file:"?" when opened as a file — serve the folder over http to use this":" yet"}.</p>`; return; }
+  const teams=[...DATA.teams].sort((a,b)=>b.p_champion-a.p_champion);
+  if(!muTeam) muTeam=teams[0].code;
+  const teamOpts=teams.map(t=>`<option value="${t.code}"${t.code===muTeam?" selected":""}>${t.name}</option>`).join("");
+  const roundOpts=Object.entries(ROUND_LABEL).map(([k,l])=>`<option value="${k}"${k===muRound?" selected":""}>${l}</option>`).join("");
+  host.innerHTML=`<div class="muctrl">
+    <label>Team <select id="mu-team">${teamOpts}</select></label>
+    <label>Round <select id="mu-round">${roundOpts}</select></label>
+  </div><div id="mu-out"></div>`;
+  document.getElementById("mu-team").onchange=e=>{muTeam=e.target.value; renderMatchupResults();};
+  document.getElementById("mu-round").onchange=e=>{muRound=e.target.value; renderMatchupResults();};
+  renderMatchupResults();
+}
+function renderMatchupResults(){
+  const out=document.getElementById("mu-out"), team=DATA.teams.find(t=>t.code===muTeam);
+  const data=(MU.teams[muTeam]||{})[muRound], rl=ROUND_LABEL[muRound];
+  if(!data||!data.reach){
+    out.innerHTML=`<p class="lead">${team.name} doesn't reach the ${rl.toLowerCase()} in any of the ${MU.n_sims.toLocaleString()} simulations.</p>`;
+    return;
+  }
+  const opps=Object.entries(data.opps).sort((a,b)=>b[1]-a[1]);
+  let h=`<div class="muhead">${flag(team.code,28)}<div><div class="mu-h1">${team.name} in the ${rl}</div>
+    <div class="mu-sub">Reaches this round in <b style="color:var(--ink)">${pctd(data.reach/MU.n_sims)}</b> of simulations · ${opps.length} possible opponents</div></div></div>`;
+  h+=`<div class="oppgrid">`+opps.map(([oc,cnt])=>{
+    const o=DATA.teams.find(t=>t.code===oc), name=o?o.name:oc, cond=cnt/data.reach, adv=advanceProb(team.code,oc);
+    const advHtml = adv==null?"<span class='adv'></span>":`<span class="adv ${adv>=0.5?'up':'down'}">${Math.round(adv*100)}% adv</span>`;
+    return `<div class="opprow clickable" onclick="openTeam('${oc}')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')openTeam('${oc}')">
+      <div class="oppname">${flag(oc,18)} ${name}</div>
+      <div class="oppbar"><div class="oppfill" style="width:${Math.max(2,cond*100)}%"></div></div>
+      <div class="opppct">${pct(cond)}</div>${advHtml}</div>`;
+  }).join("")+`</div>`;
+  h+=`<p class="lead" style="margin-top:16px">Bars show how often each opponent comes up <i>given</i> ${team.name} reaches the ${rl.toLowerCase()}. “adv” is the model's head-to-head chance ${team.name} advances if they meet.</p>`;
+  out.innerHTML=h;
+}
+
 /* ---- tabs / theme / refresh ---- */
 document.getElementById("tabs").addEventListener("click",e=>{
   const b=e.target.closest("button[data-tab]"); if(!b)return;
@@ -1326,6 +1407,7 @@ async function load(){
     if(!r.ok)throw new Error("HTTP "+r.status);
     const d=await r.json();
     try{ const rp=await fetch("odds.prev.json?t="+Date.now(),{cache:"no-store"}); if(rp.ok) PREV=await rp.json(); }catch(e){}
+    if(!MU){ try{ const rm=await fetch("matchups.json?t="+Date.now(),{cache:"no-store"}); if(rm.ok) MU=await rm.json(); }catch(e){} }
     DATA=d; render();   // always re-render: picks up the prev snapshot + flashes any moves
   }catch(e){
     if(!DATA)showErr(`Couldn't load <code>odds.json</code> (${e.message}).<br>Serve the folder over http: <code>python3 -m http.server -d web 4318</code>`);
