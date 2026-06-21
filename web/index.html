@@ -113,19 +113,30 @@
   table.full td.p{font-variant-numeric:tabular-nums;border-radius:0}
   table.full tr:hover td{background:var(--surface2)}
 
-  /* bracket */
-  .bracket{display:flex;gap:18px;overflow-x:auto;padding-bottom:12px}
-  .col{display:flex;flex-direction:column;justify-content:space-around;gap:10px;min-width:170px}
-  .col h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin:0 0 4px;text-align:center}
-  .mt{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:12.5px}
-  .mt .slot{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
+  /* bracket — flex columns; each match centred in an equal-height slot so rounds align */
+  .bracket{display:flex;overflow-x:auto;padding-bottom:12px;align-items:stretch}
+  .col{display:flex;flex-direction:column;min-width:200px;padding:0 11px}
+  .col h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);margin:0 0 6px;text-align:center;flex:none}
+  .mw{flex:1;min-height:80px;display:flex;align-items:center;position:relative}
+  .mt{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:12.5px;position:relative}
+  .mt .mhd{padding-bottom:4px;margin-bottom:4px;border-bottom:1px solid var(--line)}
+  .mt .mno{display:flex;justify-content:space-between;gap:6px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);font-weight:600}
+  .mt .mloc{font-size:10.5px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mt .slot{display:flex;justify-content:space-between;gap:8px;padding:2px 0;align-items:center}
+  .mt .slot .nm{display:flex;align-items:center;gap:6px;min-width:0;flex:1 1 auto}
+  .mt .slot .nm .tn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .mt .slot.proj{color:var(--ink)}
   .mt .slot.tbd{color:var(--faint)}
-  .mt .slot .seed{font-family:var(--mono);font-size:10px;color:var(--faint)}
-  .mt .mhd{padding-bottom:3px;margin-bottom:3px;border-bottom:1px solid var(--line)}
-  .mt .mno{display:flex;justify-content:space-between;gap:6px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);font-weight:600}
-  .mt .mloc{font-size:10.5px;color:var(--muted);margin-top:1px}
-  .mt+.mt{margin-top:0}
+  .mt .slot .seed{font-family:var(--mono);font-size:10px;color:var(--faint);flex:none}
+  .col:not(:last-child) .mt::after{content:"";position:absolute;right:-11px;top:50%;width:11px;height:1px;background:var(--line2)}
+  .col:not(:first-child) .mw::before{content:"";position:absolute;left:-11px;top:25%;height:50%;width:1px;background:var(--line2)}
+  .col:not(:first-child) .mw::after{content:"";position:absolute;left:-11px;top:50%;width:11px;height:1px;background:var(--line2)}
+
+  /* hover tooltips explaining numbers */
+  #tip{position:fixed;z-index:200;max-width:232px;background:var(--ink);color:var(--bg);font-size:12.5px;line-height:1.4;font-weight:500;padding:7px 10px;border-radius:8px;box-shadow:0 6px 22px rgba(0,0,0,.24);pointer-events:none}
+  #tip[hidden]{display:none}
+  [data-tip]{cursor:help}
+  .clickable [data-tip],.clickable[data-tip]{cursor:pointer}
 
   /* method */
   .prose{max-width:70ch;font-size:14.5px;line-height:1.65}
@@ -241,6 +252,7 @@
 </div>
 
 <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title"><div class="sheet" id="sheet"></div></div>
+<div id="tip" role="tooltip" hidden></div>
 
 <script id="bootstrap" type="application/json">
 {
@@ -1124,6 +1136,29 @@ const DATE={73:"Jun 28",74:"Jun 29",75:"Jun 29",76:"Jun 29",77:"Jun 30",78:"Jun 
 function byGroup(){ const g={}; DATA.teams.forEach(t=>{(g[t.group]=g[t.group]||[]).push(t)});
   Object.values(g).forEach(a=>a.sort((x,y)=>x.pos-y.pos)); return g; }
 
+const TIPS={
+  group:"The group this team is in.",
+  elo:"Team-strength rating — higher is stronger. Fit from ~49,000 internationals since 1872.",
+  pts:"Group points so far: 3 for a win, 1 for a draw.",
+  pl:"Matches played in the group stage.",
+  gd:"Goal difference — goals scored minus conceded.",
+  qual:"Chance to qualify: finish top 2, or be one of the 8 best third-placed teams.",
+  p_qualify:"Chance to reach the Round of 32 (qualify from the group).",
+  p_r16:"Chance to reach the Round of 16.",
+  p_qf:"Chance to reach the quarter-finals.",
+  p_sf:"Chance to reach the semi-finals.",
+  p_final:"Chance to reach the final.",
+  p_champion:"Chance to win the World Cup — across 10,000 simulations.",
+  certainty:"Share of the 104-match tournament played so far. The more that's done, the more settled the odds.",
+  swing:"Change in this team's chance to qualify since the previous update.",
+  muPct:"How often this opponent comes up — out of the sims where the team reaches this round.",
+  muAdv:"The model's head-to-head chance this team advances past this opponent in a knockout tie.",
+  reach:"Share of the 10,000 simulations where the team reaches this round.",
+  statSims:"Each update plays the rest of the tournament out 10,000 times and averages the results.",
+  statRps:"Ranked Probability Score on past matches (lower is better). 0.166 beats the 0.232 guess-the-base-rate baseline.",
+  statAcc:"Share of past matches where the model's most-likely result was the one that happened.",
+  statCost:"Runs entirely on free data sources and free hosting."
+};
 function prevMap(){ const m={}; (PREV&&PREV.teams||[]).forEach(t=>m[t.code]=t); return m; }
 
 // Reconstruct the matches played since the previous snapshot from per-team stat
@@ -1150,7 +1185,7 @@ function renderCertainty(){
   document.getElementById("certainty").innerHTML=
     `<span>Tournament progress</span>`+
     `<div class="ctrack"><div class="cfill" style="width:${pctv}%"></div></div>`+
-    `<span><b style="color:var(--ink)">${played}</b> of ${total} matches · ${phase} — early, so odds will still swing</span>`;
+    `<span data-tip="${TIPS.certainty}"><b style="color:var(--ink)">${played}</b> of ${total} matches · ${phase} — early, so odds will still swing</span>`;
 }
 
 function renderChanged(){
@@ -1174,7 +1209,7 @@ function renderChanged(){
         : `<span class="reschip">${flag(r.a,15)} ${r.an} <b>${r.sa}–${r.sb}</b></span>`).join("")+`</div>`;
   if(movers.length) h+=`<div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);margin-bottom:5px">Biggest qualification swings</div><div>`+movers.map(m=>{
     const up=m.d>0; return `<span class="mv clickable" onclick="openTeam('${m.t.code}')">${flag(m.t.code,14)} ${m.t.name} `+
-      `<span class="${up?'up':'down'}">${up?'+':''}${(m.d*100).toFixed(1)}%</span></span>`;
+      `<span class="${up?'up':'down'}" data-tip="${TIPS.swing}">${up?'+':''}${(m.d*100).toFixed(1)}%</span></span>`;
   }).join("")+`</div>`;
   el.innerHTML=h;
 }
@@ -1190,7 +1225,7 @@ function openTeam(code){
   h+=`<h3 id="sheet-title" style="display:flex;align-items:center;gap:11px">${flag(t.code,32)}${t.name}</h3><div class="grp">Group ${t.group} · #${t.pos} now · ${t.pts} pts from ${t.played} · Elo ${t.elo}</div>`;
   h+=`<div class="ladder">`+LADDER.map(([k,l])=>{
     const w=Math.max(1.5,t[k]*100);
-    return `<div class="lrow"><span class="lt">${l}</span><div class="ltrack"><div class="lbar" style="width:${w}%"></div></div><span class="lpct">${pct(t[k])}</span></div>`;
+    return `<div class="lrow"><span class="lt">${l}</span><div class="ltrack"><div class="lbar" style="width:${w}%"></div></div><span class="lpct" data-tip="${TIPS[k]||''}">${pct(t[k])}</span></div>`;
   }).join("")+`</div>`;
   if(p){
     const dw=t.p_champion-p.p_champion, dq=t.p_qualify-p.p_qualify;
@@ -1227,7 +1262,7 @@ function renderRace(){
   const top=teams[0], max=top.p_champion;
   document.getElementById("hero").innerHTML=
     `<div><div class="sub">Most likely to lift the trophy</div><div class="big" style="display:flex;align-items:center;gap:14px">${flag(top.code,40)}${top.name}</div></div>
-     <div><div class="big" style="color:var(--accent)">${pctd(top.p_champion)}</div><div class="sub">to win · ${pctd(top.p_final)} reach the final</div></div>`;
+     <div><div class="big" style="color:var(--accent)" data-tip="${TIPS.p_champion}">${pctd(top.p_champion)}</div><div class="sub">to win · ${pctd(top.p_final)} reach the final</div></div>`;
   const race=document.getElementById("race");
   race.innerHTML="";
   teams.slice(0,16).forEach((t,i)=>{
@@ -1241,7 +1276,7 @@ function renderRace(){
     row.innerHTML=`<div class="rank">${i+1}</div>
       <div class="barwrap${changed?" flash":""}"><div class="barfill" style="width:${w}%"></div>
         <div class="barlabel">${flag(t.code,22)}<span>${t.name}</span><span class="code">${t.code}</span></div></div>
-      <div class="pct">${pctd(t.p_champion)}</div>`;
+      <div class="pct" data-tip="${TIPS.p_champion}">${pctd(t.p_champion)}</div>`;
     race.appendChild(row);
   });
 }
@@ -1264,7 +1299,7 @@ function renderGroups(){
     }).join("");
     const card=document.createElement("div"); card.className="card";
     card.innerHTML=`<h3>Group ${letter} <span>qualify</span></h3>
-      <table class="gt"><thead><tr><th class="pos"></th><th class="name">Team</th><th>Pl</th><th>Pts</th><th>GD</th><th>Q%</th></tr></thead>
+      <table class="gt"><thead><tr><th class="pos"></th><th class="name">Team</th><th data-tip="${TIPS.pl}">Pl</th><th data-tip="${TIPS.pts}">Pts</th><th data-tip="${TIPS.gd}">GD</th><th data-tip="${TIPS.qual}">Q%</th></tr></thead>
       <tbody>${rows}</tbody></table>`;
     host.appendChild(card);
   });
@@ -1276,6 +1311,16 @@ function projTeam(slot,g){
   const t=(g[grp]||[]).find(x=>x.pos===(kind==="W"?1:2));
   return {label:t?t.name:"—",cls:"proj",seed:(kind==="W"?"1":"2")+grp,code:t?t.code:null};
 }
+function seedTip(s){
+  if(s==="3") return "A third-placed team — assigned via the FIFA allocation table";
+  if(s[0]==="M") return "Winner of Match "+s.slice(1);
+  if(s[0]==="1") return "Winner of Group "+s.slice(1);
+  if(s[0]==="2") return "Runner-up of Group "+s.slice(1);
+  return "";
+}
+function bSlot(s){
+  return `<div class="slot ${s.cls}"><span class="nm">${s.code?flag(s.code,15):""}<span class="tn">${s.label}</span></span><span class="seed" data-tip="${seedTip(s.seed)}">${s.seed}</span></div>`;
+}
 function renderBracket(){
   const g=byGroup(), host=document.getElementById("bracket"); host.innerHTML="";
   COLS.forEach(([title,ids])=>{
@@ -1285,9 +1330,9 @@ function renderBracket(){
       let a,b;
       if(R32[id]){ a=projTeam(R32[id][0],g); b=projTeam(R32[id][1],g); }
       else { const [x,y]=KO[id]; a={label:"Winner "+x,cls:"tbd",seed:"M"+x}; b={label:"Winner "+y,cls:"tbd",seed:"M"+y}; }
-      html+=`<div class="mt"><div class="mhd"><div class="mno"><span>Match ${id}</span><span>${DATE[id]||""}</span></div>${LOC[id]?`<div class="mloc">${LOC[id]}</div>`:""}</div>
-        <div class="slot ${a.cls}"><span>${a.code?flag(a.code,15)+" ":""}${a.label}</span><span class="seed">${a.seed}</span></div>
-        <div class="slot ${b.cls}"><span>${b.code?flag(b.code,15)+" ":""}${b.label}</span><span class="seed">${b.seed}</span></div></div>`;
+      const hdrTip=LOC[id]?` data-tip="Match ${id} · ${DATE[id]||""} · ${LOC[id]}"`:"";
+      html+=`<div class="mw"><div class="mt"><div class="mhd"><div class="mno"${hdrTip}><span>Match ${id}</span><span>${DATE[id]||""}</span></div>${LOC[id]?`<div class="mloc">${LOC[id]}</div>`:""}</div>
+        ${bSlot(a)}${bSlot(b)}</div></div>`;
     });
     col.innerHTML=html; host.appendChild(col);
   });
@@ -1297,8 +1342,8 @@ function renderTable(){
   const teams=[...DATA.teams].sort((a,b)=> (sortAsc?1:-1)*((a[sortKey]>b[sortKey])?1:(a[sortKey]<b[sortKey])?-1:0));
   const th=k=>`class="${sortKey===k?"sorted"+(sortAsc?" asc":""):""}"`;
   let h=`<thead><tr>
-    <th class="name" data-k="name">Team</th><th data-k="group">Grp</th><th data-k="elo">Elo</th>
-    <th data-k="pts">Pts</th>${ROUNDS.map(([k,l])=>`<th data-k="${k}">${l}</th>`).join("")}</tr></thead><tbody>`;
+    <th class="name" data-k="name">Team</th><th data-k="group" data-tip="${TIPS.group}">Grp</th><th data-k="elo" data-tip="${TIPS.elo}">Elo</th>
+    <th data-k="pts" data-tip="${TIPS.pts}">Pts</th>${ROUNDS.map(([k,l])=>`<th data-k="${k}" data-tip="${TIPS[k]}">${l}</th>`).join("")}</tr></thead><tbody>`;
   teams.forEach(t=>{
     h+=`<tr class="clickable" role="button" tabindex="0" data-code="${t.code}" aria-label="${t.name} — open details" onclick="openTeam('${t.code}')"><td class="name">${flag(t.code,18)} ${t.name}</td><td class="code">${t.group}</td><td>${t.elo}</td><td>${t.pts}</td>`;
     ROUNDS.forEach(([k])=>{const c=heat(t[k]); h+=`<td class="p" style="background:${c.bg};color:${c.fg}">${pct(t[k])}</td>`;});
@@ -1315,10 +1360,10 @@ function renderMethod(){
   const mp=DATA.model_params||{};
   document.getElementById("method").innerHTML=`
    <div class="stats">
-     <div class="stat"><div class="v">${DATA.n_sims.toLocaleString()}</div><div class="k">simulations / update</div></div>
-     <div class="stat"><div class="v">0.166</div><div class="k">backtest RPS (skill vs 0.232 baseline)</div></div>
-     <div class="stat"><div class="v">61.8%</div><div class="k">backtest accuracy</div></div>
-     <div class="stat"><div class="v">$0</div><div class="k">running cost</div></div>
+     <div class="stat" data-tip="${TIPS.statSims}"><div class="v">${DATA.n_sims.toLocaleString()}</div><div class="k">simulations / update</div></div>
+     <div class="stat" data-tip="${TIPS.statRps}"><div class="v">0.166</div><div class="k">backtest RPS (skill vs 0.232 baseline)</div></div>
+     <div class="stat" data-tip="${TIPS.statAcc}"><div class="v">61.8%</div><div class="k">backtest accuracy</div></div>
+     <div class="stat" data-tip="${TIPS.statCost}"><div class="v">$0</div><div class="k">running cost</div></div>
    </div>
    <p>Every team carries an <b>Elo rating</b> fit from ~49,000 international results since 1872 — weighted by match importance (a World Cup game moves ratings three times as much as a friendly) and margin of victory.</p>
    <h3>From ratings to scorelines</h3>
@@ -1375,14 +1420,14 @@ function renderMatchupResults(){
   }
   const opps=Object.entries(data.opps).sort((a,b)=>b[1]-a[1]);
   let h=`<div class="muhead">${flag(team.code,28)}<div><div class="mu-h1">${team.name} in the ${rl}</div>
-    <div class="mu-sub">Reaches this round in <b style="color:var(--ink)">${pctd(data.reach/MU.n_sims)}</b> of simulations · ${opps.length} possible opponents</div></div></div>`;
+    <div class="mu-sub">Reaches this round in <b style="color:var(--ink)" data-tip="${TIPS.reach}">${pctd(data.reach/MU.n_sims)}</b> of simulations · ${opps.length} possible opponents</div></div></div>`;
   h+=`<div class="oppgrid">`+opps.map(([oc,cnt])=>{
     const o=DATA.teams.find(t=>t.code===oc), name=o?o.name:oc, cond=cnt/data.reach, adv=advanceProb(team.code,oc);
-    const advHtml = adv==null?"<span class='adv'></span>":`<span class="adv ${adv>=0.5?'up':'down'}">${Math.round(adv*100)}% adv</span>`;
+    const advHtml = adv==null?"<span class='adv'></span>":`<span class="adv ${adv>=0.5?'up':'down'}" data-tip="${TIPS.muAdv}">${Math.round(adv*100)}% adv</span>`;
     return `<div class="opprow clickable" onclick="openTeam('${oc}')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')openTeam('${oc}')">
       <div class="oppname">${flag(oc,18)} ${name}</div>
       <div class="oppbar"><div class="oppfill" style="width:${Math.max(2,cond*100)}%"></div></div>
-      <div class="opppct">${pct(cond)}</div>${advHtml}</div>`;
+      <div class="opppct" data-tip="${TIPS.muPct}">${pct(cond)}</div>${advHtml}</div>`;
   }).join("")+`</div>`;
   h+=`<p class="lead" style="margin-top:16px">Bars show how often each opponent comes up <i>given</i> ${team.name} reaches the ${rl.toLowerCase()}. “adv” is the model's head-to-head chance ${team.name} advances if they meet.</p>`;
   out.innerHTML=h;
@@ -1427,6 +1472,24 @@ document.getElementById("full").addEventListener("keydown",e=>{   // table rows:
   const tr=e.target.closest("tr[data-code]");
   if(tr&&(e.key==="Enter"||e.key===" ")){ e.preventDefault(); openTeam(tr.dataset.code); }
 });
+
+/* ---- hover/focus tooltips on any [data-tip] element ---- */
+const TIP=document.getElementById("tip");
+function showTip(el){
+  const t=el.getAttribute("data-tip"); if(!t){ hideTip(); return; }
+  TIP.textContent=t; TIP.hidden=false;
+  const r=el.getBoundingClientRect(); TIP.style.left="0px"; TIP.style.top="0px";
+  const tr=TIP.getBoundingClientRect();
+  const x=Math.min(Math.max(8,r.left+r.width/2-tr.width/2), innerWidth-tr.width-8);
+  let y=r.top-tr.height-9; if(y<6) y=r.bottom+9;
+  TIP.style.left=x+"px"; TIP.style.top=y+"px";
+}
+function hideTip(){ TIP.hidden=true; }
+document.addEventListener("mouseover",e=>{ const el=e.target.closest("[data-tip]"); if(el) showTip(el); });
+document.addEventListener("mouseout",e=>{ const el=e.target.closest("[data-tip]"); if(el && !el.contains(e.relatedTarget)) hideTip(); });
+document.addEventListener("focusin",e=>{ const el=e.target.closest("[data-tip]"); if(el) showTip(el); });
+document.addEventListener("focusout",e=>{ if(e.target.closest("[data-tip]")) hideTip(); });
+window.addEventListener("scroll",hideTip,true);
 const boot=(()=>{try{return JSON.parse(document.getElementById("bootstrap").textContent)}catch(e){return null}})();
 if(boot&&boot.teams&&boot.teams.length){ DATA=boot; render(); }
 if(location.protocol==="file:"){
