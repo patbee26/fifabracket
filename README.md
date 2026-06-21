@@ -6,9 +6,9 @@ recomputing as real results come in. Runs on free data + free hosting.
 - **Spec:** [`worldcup-odds-spec.md`](worldcup-odds-spec.md)
 - **Spec pressure-test (read this):** [`PRESSURE-TEST.md`](PRESSURE-TEST.md)
 
-> **Status:** Phases 0 (data) + 1 (model) + 2 (simulator) + 3 (pipeline) + 4 (front end)
-> built and verified. The tournament is underway; an hourly GitHub Action refreshes the
-> odds and the self-updating bracket UI picks them up automatically.
+> **Status:** Complete — all spec phases (0–6) built and verified. A free, self-updating,
+> self-explaining World Cup odds bracket: an hourly GitHub Action refreshes the odds, the
+> UI picks them up, shows *what changed and why*, and is keyboard- and screen-reader-accessible.
 
 ## Quick start
 
@@ -90,8 +90,12 @@ web/       index.html (static dashboard) + odds.json (+ odds.prev.json) — the 
 
 The site is **dependency-free** (one `index.html`, vanilla JS, no build step): title-race
 board, live group standings, projected bracket, sortable 48-team table, methodology page,
-light/dark, and a 60-second auto-refresh that flashes changed odds. Deploy = publish the
-`web/` folder; the pipeline (Phase 3) regenerates `web/odds.json` in place.
+light/dark, and a 60-second auto-refresh that flashes changed odds. It also explains itself
+(Phase 5): a **tournament-progress certainty meter**, a **"since the last update"** card
+(results reconstructed from the `odds.json` vs `odds.prev.json` diff + biggest qualification
+swings), and a **team drill-down** (tap any team → full round-by-round path + why its odds
+moved). Deploy = publish the `web/` folder; the pipeline (Phase 3) regenerates
+`web/odds.json` + `web/odds.prev.json` in place.
 
 `simulate.py` bakes the latest odds into `index.html` itself (a `<script id="bootstrap">`
 block), so the page works **opened directly** (double-click → `file://`) *and* served.
@@ -101,8 +105,12 @@ snapshot; serving over http additionally enables the live fetch + auto-refresh.
 ## Roadmap
 
 Phase 0 **Data** ✅ → 1 **Model** ✅ → 2 **Simulator** ✅ → 4 **Front end** ✅ →
-3 **Pipeline** ✅ → 5 Explain (confidence + "why it moved" — `odds.prev.json` is already
-captured each run to enable this) → 6 Polish.
+3 **Pipeline** ✅ → 5 **Explain** ✅ → 6 **Polish** ✅ — *spec complete.*
+
+**Phase 6 polish:** full keyboard access (focusable rows, Enter/Space, focus trap + restore
+on the drill-down, `role="dialog"`), `prefers-reduced-motion` support, focus-visible rings,
+a subtle modal entrance, an inline-SVG favicon, and Open-Graph/description tags for sharing.
+Verified across light/dark/mobile with no console errors.
 
 ### Automation (Phase 3)
 `.github/workflows/update-odds.yml` runs hourly (and on demand): it executes

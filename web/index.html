@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>World Cup 2026 — Live Odds</title>
+<meta name="description" content="Live, self-updating odds for the 2026 FIFA World Cup — every team's chance to advance and win, recomputed as results come in.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="World Cup 2026 — Live Odds">
+<meta property="og:description" content="A bracket that knows the odds and updates itself as the tournament plays out.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230e7a52'/><circle cx='16' cy='16' r='7.5' fill='none' stroke='%23ffffff' stroke-width='2'/><circle cx='16' cy='16' r='2.3' fill='%23ffffff'/></svg>">
 <style>
   :root{
     --bg:#f4f5f7; --surface:#fff; --surface2:#fafbfc; --ink:#16191d; --muted:#646b73;
@@ -117,6 +123,45 @@
   .note{font-size:13px;color:var(--muted);border-left:3px solid var(--line2);padding:4px 0 4px 12px;margin:12px 0}
   .err{padding:30px;text-align:center;color:var(--muted)}
   footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--faint)}
+
+  /* phase 5: certainty + what-changed + drill-down */
+  .certainty{display:flex;align-items:center;gap:12px;margin:0 0 16px;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+  .ctrack{flex:1;height:6px;background:var(--surface);border:1px solid var(--line);border-radius:99px;overflow:hidden;min-width:120px;max-width:260px}
+  .cfill{height:100%;background:var(--accent)}
+  .changed{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;margin:0 0 20px}
+  .changed h3{margin:0 0 9px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700}
+  .reschip{display:inline-flex;gap:6px;align-items:center;font-size:13px;background:var(--surface2);border:1px solid var(--line);border-radius:99px;padding:3px 11px;margin:0 6px 6px 0}
+  .mv{display:inline-flex;gap:5px;font-size:13px;margin:0 13px 4px 0}
+  .up{color:var(--qual);font-weight:600}.down{color:var(--out);font-weight:600}
+  .clickable{cursor:pointer}
+  .row.clickable:hover .barwrap{border-color:var(--accent)}
+  table.full tr.clickable:hover{outline:1px solid var(--line2)}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
+  .modal[hidden]{display:none}
+  .sheet{background:var(--surface);border:1px solid var(--line2);border-radius:16px;max-width:440px;width:100%;padding:20px 22px;max-height:85vh;overflow:auto}
+  .sheet .x{float:right;font-size:22px;line-height:1;background:none;border:none;color:var(--muted);cursor:pointer;padding:0}
+  .sheet h3{margin:0;font-size:22px;letter-spacing:-.02em}
+  .sheet .grp{font-size:13px;color:var(--muted);margin:3px 0 16px}
+  .ladder{display:grid;gap:7px}
+  .lrow{display:grid;grid-template-columns:74px 1fr 46px;align-items:center;gap:10px;font-size:13px}
+  .lrow .lt{color:var(--muted)}
+  .ltrack{height:18px;background:var(--surface2);border-radius:5px;overflow:hidden}
+  .lbar{height:100%;background:rgba(var(--accent-rgb),.7)}
+  .lpct{text-align:right;font-weight:600}
+  .since{margin-top:16px;padding-top:13px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.55}
+
+  /* phase 6: motion + focus + reduced-motion */
+  .sheet{animation:pop .18s ease-out}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+  .modal:not([hidden]){animation:fade .16s ease-out}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .clickable:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+  nav.tabs button:focus-visible{outline-offset:-4px;border-radius:6px}
+  button.ghost{min-height:38px}
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  }
 </style>
 </head>
 <body>
@@ -139,8 +184,11 @@
 
 <div class="wrap">
   <section class="tab active" id="tab-race" role="tabpanel">
+    <div class="certainty" id="certainty"></div>
+    <div class="changed" id="changed" hidden></div>
     <div class="hero" id="hero"></div>
     <div class="race" id="race"></div>
+    <p class="lead" style="margin-top:14px">Tap any team for its full path and what moved its odds.</p>
   </section>
 
   <section class="tab" id="tab-groups" role="tabpanel">
@@ -168,6 +216,8 @@
 
   <footer id="foot"></footer>
 </div>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-title"><div class="sheet" id="sheet"></div></div>
 
 <script id="bootstrap" type="application/json">
 {
@@ -1005,7 +1055,7 @@
 <script>
 const ODDS_URL = "odds.json";
 const ROUNDS = [["p_qualify","R32"],["p_r16","R16"],["p_qf","QF"],["p_sf","SF"],["p_final","Final"],["p_champion","Win"]];
-let DATA=null, prevWin={}, sortKey="p_champion", sortAsc=false;
+let DATA=null, PREV=null, prevWin={}, sortKey="p_champion", sortAsc=false;
 
 const pct = p => (p*100).toFixed(p>=0.0995?0:1)+"%";
 const pctd = p => (p*100).toFixed(1)+"%";
@@ -1038,9 +1088,98 @@ const DATE={73:"Jun 28",74:"Jun 29",75:"Jun 29",76:"Jun 29",77:"Jun 30",78:"Jun 
 function byGroup(){ const g={}; DATA.teams.forEach(t=>{(g[t.group]=g[t.group]||[]).push(t)});
   Object.values(g).forEach(a=>a.sort((x,y)=>x.pos-y.pos)); return g; }
 
+function prevMap(){ const m={}; (PREV&&PREV.teams||[]).forEach(t=>m[t.code]=t); return m; }
+
+// Reconstruct the matches played since the previous snapshot from per-team stat
+// deltas (a team's gf/ga change = what it scored/conceded in its new game).
+function newResults(){
+  if(!PREV) return [];
+  const prev=prevMap(), ga=x=>x.gf-x.gd;   // odds.json carries gf + gd, so ga = gf - gd
+  const played=DATA.teams.filter(t=>prev[t.code] && (t.played-prev[t.code].played)===1);
+  const used=new Set(), out=[];
+  played.forEach(a=>{
+    if(used.has(a.code)) return;
+    const pa=prev[a.code], sa=a.gf-pa.gf, ca=ga(a)-ga(pa);
+    const b=played.find(x=>!used.has(x.code)&&x.code!==a.code&&x.group===a.group
+      &&(x.gf-prev[x.code].gf)===ca&&(ga(x)-ga(prev[x.code]))===sa);
+    if(b){ used.add(a.code); used.add(b.code); out.push({a:a.code,an:a.name,b:b.code,bn:b.name,sa,sb:ca}); }
+    else { used.add(a.code); out.push({a:a.code,an:a.name,b:null,sa,sb:ca}); }
+  });
+  return out;
+}
+
+function renderCertainty(){
+  const played=DATA.completed_results, total=104, pctv=Math.round(played/total*100);
+  const phase = played<72 ? "group stage" : "knockouts";
+  document.getElementById("certainty").innerHTML=
+    `<span>Tournament progress</span>`+
+    `<div class="ctrack"><div class="cfill" style="width:${pctv}%"></div></div>`+
+    `<span><b style="color:var(--ink)">${played}</b> of ${total} matches · ${phase} — early, so odds will still swing</span>`;
+}
+
+function renderChanged(){
+  const el=document.getElementById("changed");
+  if(!PREV){ el.hidden=true; return; }
+  const prev=prevMap();
+  const res=newResults();
+  // group results move qualification odds by real, large amounts; title odds barely
+  // (and at 10k sims small title moves are mostly Monte-Carlo noise), so surface the
+  // qualification swings — the signal that actually means something this stage.
+  const movers=DATA.teams.map(t=>({t,d:t.p_qualify-(prev[t.code]?prev[t.code].p_qualify:t.p_qualify)}))
+    .filter(m=>Math.abs(m.d)>=0.01).sort((x,y)=>Math.abs(y.d)-Math.abs(x.d)).slice(0,6);
+  el.hidden=false;
+  if(!res.length && !movers.length){
+    el.innerHTML=`<h3>Since the last update</h3><div style="font-size:13px;color:var(--muted)">No new results — the odds are unchanged.</div>`;
+    return;
+  }
+  let h=`<h3>Since the last update</h3>`;
+  if(res.length) h+=`<div style="margin-bottom:10px">`+res.map(r=>
+    r.b ? `<span class="reschip">${r.an} <b>${r.sa}–${r.sb}</b> ${r.bn}</span>`
+        : `<span class="reschip">${r.an} <b>${r.sa}–${r.sb}</b></span>`).join("")+`</div>`;
+  if(movers.length) h+=`<div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);margin-bottom:5px">Biggest qualification swings</div><div>`+movers.map(m=>{
+    const up=m.d>0; return `<span class="mv clickable" onclick="openTeam('${m.t.code}')">${m.t.name} `+
+      `<span class="${up?'up':'down'}">${up?'+':''}${(m.d*100).toFixed(1)}%</span></span>`;
+  }).join("")+`</div>`;
+  el.innerHTML=h;
+}
+
+let lastFocus=null;
+const LADDER=[["p_qualify","Reach R32"],["p_r16","Reach R16"],["p_qf","Reach QF"],
+  ["p_sf","Reach SF"],["p_final","Reach final"],["p_champion","Win it all"]];
+
+function openTeam(code){
+  const t=DATA.teams.find(x=>x.code===code); if(!t) return;
+  const p=prevMap()[code];
+  let h=`<button class="x" onclick="closeModal()" aria-label="Close details">×</button>`;
+  h+=`<h3 id="sheet-title">${t.name}</h3><div class="grp">Group ${t.group} · #${t.pos} now · ${t.pts} pts from ${t.played} · Elo ${t.elo}</div>`;
+  h+=`<div class="ladder">`+LADDER.map(([k,l])=>{
+    const w=Math.max(1.5,t[k]*100);
+    return `<div class="lrow"><span class="lt">${l}</span><div class="ltrack"><div class="lbar" style="width:${w}%"></div></div><span class="lpct">${pct(t[k])}</span></div>`;
+  }).join("")+`</div>`;
+  if(p){
+    const dw=t.p_champion-p.p_champion, dq=t.p_qualify-p.p_qualify;
+    const res=newResults().find(r=>r.a===code||r.b===code);
+    let line="No new game since the last update.";
+    if(res && res.b){
+      const mine=res.a===code?[res.sa,res.sb]:[res.sb,res.sa], opp=res.a===code?res.bn:res.an;
+      const verb=mine[0]>mine[1]?"Beat":mine[0]<mine[1]?"Lost to":"Drew";
+      line=`${verb} ${opp} ${mine[0]}–${mine[1]}.`;
+    } else if(res){ line=`Scored ${res.sa}, conceded ${res.sb} in their latest match.`; }
+    const f=x=>`<span class="${x>=0?'up':'down'}">${x>=0?'+':''}${(x*100).toFixed(1)}%</span>`;
+    h+=`<div class="since"><b>Since the last update</b><br>${line} `+
+       `Title odds ${f(dw)}, qualify ${f(dq)}.</div>`;
+  }
+  lastFocus=document.activeElement;
+  document.getElementById("sheet").innerHTML=h;
+  const modal=document.getElementById("modal"); modal.hidden=false;
+  const x=modal.querySelector(".x"); if(x) x.focus();
+}
+function closeModal(){ const m=document.getElementById("modal"); if(m.hidden) return; m.hidden=true; if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
+
 function render(){
   const m=document.getElementById("meta");
   m.innerHTML=`Results through <b>${fmtDate(DATA.as_of)}</b> · <b>${DATA.completed_results}</b> of 72 group games · <b>${DATA.n_sims.toLocaleString()}</b> simulations`;
+  renderCertainty(); renderChanged();
   renderRace(); renderGroups(); renderBracket(); renderTable(); renderMethod();
   document.getElementById("foot").innerHTML=
     `Model: Elo + Dixon-Coles Poisson + Monte Carlo. Free data (martj42 · worldcup26.ir · football-data.org). Personal, non-commercial. Not betting advice.`;
@@ -1058,7 +1197,11 @@ function renderRace(){
   teams.slice(0,16).forEach((t,i)=>{
     const w=Math.max(2,(t.p_champion/max)*100);
     const changed=prevWin[t.code]!==undefined && Math.abs(prevWin[t.code]-t.p_champion)>0.004;
-    const row=document.createElement("div"); row.className="row";
+    const row=document.createElement("div"); row.className="row clickable";
+    row.tabIndex=0; row.setAttribute("role","button");
+    row.setAttribute("aria-label",`${t.name}, ${pctd(t.p_champion)} to win the cup — open details`);
+    row.onclick=()=>openTeam(t.code);
+    row.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openTeam(t.code); } };
     row.innerHTML=`<div class="rank">${i+1}</div>
       <div class="barwrap${changed?" flash":""}"><div class="barfill" style="width:${w}%"></div>
         <div class="barlabel"><span>${t.name}</span><span class="code">${t.code}</span></div></div>
@@ -1121,7 +1264,7 @@ function renderTable(){
     <th class="name" data-k="name">Team</th><th data-k="group">Grp</th><th data-k="elo">Elo</th>
     <th data-k="pts">Pts</th>${ROUNDS.map(([k,l])=>`<th data-k="${k}">${l}</th>`).join("")}</tr></thead><tbody>`;
   teams.forEach(t=>{
-    h+=`<tr><td class="name">${t.name}</td><td class="code">${t.group}</td><td>${t.elo}</td><td>${t.pts}</td>`;
+    h+=`<tr class="clickable" role="button" tabindex="0" data-code="${t.code}" aria-label="${t.name} — open details" onclick="openTeam('${t.code}')"><td class="name">${t.name}</td><td class="code">${t.group}</td><td>${t.elo}</td><td>${t.pts}</td>`;
     ROUNDS.forEach(([k])=>{const c=heat(t[k]); h+=`<td class="p" style="background:${c.bg};color:${c.fg}">${pct(t[k])}</td>`;});
     h+="</tr>";
   });
@@ -1169,12 +1312,26 @@ async function load(){
     const r=await fetch(ODDS_URL+"?t="+Date.now(),{cache:"no-store"});
     if(!r.ok)throw new Error("HTTP "+r.status);
     const d=await r.json();
-    const fresh=!DATA||d.as_of!==DATA.as_of||d.n_sims!==DATA.n_sims||d.completed_results!==DATA.completed_results;
-    DATA=d; if(fresh)render();
+    try{ const rp=await fetch("odds.prev.json?t="+Date.now(),{cache:"no-store"}); if(rp.ok) PREV=await rp.json(); }catch(e){}
+    DATA=d; render();   // always re-render: picks up the prev snapshot + flashes any moves
   }catch(e){
     if(!DATA)showErr(`Couldn't load <code>odds.json</code> (${e.message}).<br>Serve the folder over http: <code>python3 -m http.server -d web 4318</code>`);
   }
 }
+document.getElementById("modal").addEventListener("click",e=>{ if(e.target.id==="modal") closeModal(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModal(); });
+document.getElementById("modal").addEventListener("keydown",e=>{   // focus trap
+  if(e.key!=="Tab") return;
+  const f=[...document.querySelectorAll("#modal button,#modal [tabindex]")].filter(x=>x.offsetParent!==null);
+  if(!f.length) return;
+  const first=f[0], last=f[f.length-1];
+  if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+});
+document.getElementById("full").addEventListener("keydown",e=>{   // table rows: Enter/Space open details
+  const tr=e.target.closest("tr[data-code]");
+  if(tr&&(e.key==="Enter"||e.key===" ")){ e.preventDefault(); openTeam(tr.dataset.code); }
+});
 const boot=(()=>{try{return JSON.parse(document.getElementById("bootstrap").textContent)}catch(e){return null}})();
 if(boot&&boot.teams&&boot.teams.length){ DATA=boot; render(); }
 if(location.protocol==="file:"){
