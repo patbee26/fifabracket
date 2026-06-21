@@ -62,6 +62,7 @@
   .barfill{position:absolute;inset:0 auto 0 0;background:rgba(var(--accent-rgb),.16);border-right:2px solid var(--accent);transition:width .6s cubic-bezier(.2,.7,.2,1)}
   .barlabel{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 12px;font-weight:600;font-size:14px}
   .barlabel .code{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:600}
+  .flag{height:auto;border-radius:2px;vertical-align:-2px;box-shadow:0 0 0 .5px rgba(0,0,0,.18);flex:none}
   .pct{text-align:right;font-weight:700;font-size:14.5px}
   .flash{animation:flash 1.4s ease-out}
   @keyframes flash{0%{background:rgba(var(--accent-rgb),.4)}100%{background:transparent}}
@@ -1063,6 +1064,18 @@ const fmtDate = s => { const [y,m,d]=s.split("-"); const M=["Jan","Feb","Mar","A
 function heat(p){ const t=Math.max(0,Math.min(1,p)); const a=0.06+t*0.82;
   return {bg:`rgba(var(--accent-rgb),${a.toFixed(3)})`, fg: t>0.55?"#fff":"var(--ink)"}; }
 
+// FIFA code -> flagcdn slug (ISO2, lowercase; UK home nations use gb-*).
+const ISO={MEX:'mx',RSA:'za',KOR:'kr',CZE:'cz',CAN:'ca',BIH:'ba',QAT:'qa',SUI:'ch',BRA:'br',MAR:'ma',
+ HAI:'ht',SCO:'gb-sct',USA:'us',PAR:'py',AUS:'au',TUR:'tr',GER:'de',CUW:'cw',CIV:'ci',ECU:'ec',NED:'nl',
+ JPN:'jp',SWE:'se',TUN:'tn',BEL:'be',EGY:'eg',IRN:'ir',NZL:'nz',ESP:'es',CPV:'cv',KSA:'sa',URU:'uy',
+ FRA:'fr',SEN:'sn',IRQ:'iq',NOR:'no',ARG:'ar',ALG:'dz',AUT:'at',JOR:'jo',POR:'pt',COD:'cd',UZB:'uz',
+ COL:'co',ENG:'gb-eng',CRO:'hr',GHA:'gh',PAN:'pa'};
+function flag(code,w){
+  const iso=ISO[code]; if(!iso) return "";
+  w=w||20;
+  return `<img class="flag" src="https://flagcdn.com/w40/${iso}.png" srcset="https://flagcdn.com/w80/${iso}.png 2x" width="${w}" alt="" loading="lazy" onerror="this.remove()">`;
+}
+
 /* ---- bracket structure (mirror of wcodds/bracket.py) ---- */
 const R32 = {
  73:[["RU","A"],["RU","B"]],74:[["W","E"],["3","E"]],75:[["W","F"],["RU","C"]],76:[["W","C"],["RU","F"]],
@@ -1134,10 +1147,10 @@ function renderChanged(){
   }
   let h=`<h3>Since the last update</h3>`;
   if(res.length) h+=`<div style="margin-bottom:10px">`+res.map(r=>
-    r.b ? `<span class="reschip">${r.an} <b>${r.sa}–${r.sb}</b> ${r.bn}</span>`
-        : `<span class="reschip">${r.an} <b>${r.sa}–${r.sb}</b></span>`).join("")+`</div>`;
+    r.b ? `<span class="reschip">${flag(r.a,15)} ${r.an} <b>${r.sa}–${r.sb}</b> ${flag(r.b,15)} ${r.bn}</span>`
+        : `<span class="reschip">${flag(r.a,15)} ${r.an} <b>${r.sa}–${r.sb}</b></span>`).join("")+`</div>`;
   if(movers.length) h+=`<div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);margin-bottom:5px">Biggest qualification swings</div><div>`+movers.map(m=>{
-    const up=m.d>0; return `<span class="mv clickable" onclick="openTeam('${m.t.code}')">${m.t.name} `+
+    const up=m.d>0; return `<span class="mv clickable" onclick="openTeam('${m.t.code}')">${flag(m.t.code,14)} ${m.t.name} `+
       `<span class="${up?'up':'down'}">${up?'+':''}${(m.d*100).toFixed(1)}%</span></span>`;
   }).join("")+`</div>`;
   el.innerHTML=h;
@@ -1151,7 +1164,7 @@ function openTeam(code){
   const t=DATA.teams.find(x=>x.code===code); if(!t) return;
   const p=prevMap()[code];
   let h=`<button class="x" onclick="closeModal()" aria-label="Close details">×</button>`;
-  h+=`<h3 id="sheet-title">${t.name}</h3><div class="grp">Group ${t.group} · #${t.pos} now · ${t.pts} pts from ${t.played} · Elo ${t.elo}</div>`;
+  h+=`<h3 id="sheet-title" style="display:flex;align-items:center;gap:11px">${flag(t.code,32)}${t.name}</h3><div class="grp">Group ${t.group} · #${t.pos} now · ${t.pts} pts from ${t.played} · Elo ${t.elo}</div>`;
   h+=`<div class="ladder">`+LADDER.map(([k,l])=>{
     const w=Math.max(1.5,t[k]*100);
     return `<div class="lrow"><span class="lt">${l}</span><div class="ltrack"><div class="lbar" style="width:${w}%"></div></div><span class="lpct">${pct(t[k])}</span></div>`;
@@ -1190,7 +1203,7 @@ function renderRace(){
   const teams=[...DATA.teams].sort((a,b)=>b.p_champion-a.p_champion);
   const top=teams[0], max=top.p_champion;
   document.getElementById("hero").innerHTML=
-    `<div><div class="sub">Most likely to lift the trophy</div><div class="big">${top.name}</div></div>
+    `<div><div class="sub">Most likely to lift the trophy</div><div class="big" style="display:flex;align-items:center;gap:14px">${flag(top.code,40)}${top.name}</div></div>
      <div><div class="big" style="color:var(--accent)">${pctd(top.p_champion)}</div><div class="sub">to win · ${pctd(top.p_final)} reach the final</div></div>`;
   const race=document.getElementById("race");
   race.innerHTML="";
@@ -1204,7 +1217,7 @@ function renderRace(){
     row.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openTeam(t.code); } };
     row.innerHTML=`<div class="rank">${i+1}</div>
       <div class="barwrap${changed?" flash":""}"><div class="barfill" style="width:${w}%"></div>
-        <div class="barlabel"><span>${t.name}</span><span class="code">${t.code}</span></div></div>
+        <div class="barlabel">${flag(t.code,22)}<span>${t.name}</span><span class="code">${t.code}</span></div></div>
       <div class="pct">${pctd(t.p_champion)}</div>`;
     race.appendChild(row);
   });
@@ -1220,7 +1233,7 @@ function renderGroups(){
       const sep=i===2?' style="border-top:1.5px dashed var(--line2)"':"";
       return `<tr class="${cls}"${sep}>
         <td class="pos">${t.pos}</td>
-        <td class="name">${t.name}</td>
+        <td class="name">${flag(t.code,18)}${t.name}</td>
         <td>${t.played}</td><td>${t.pts}</td>
         <td>${t.gd>0?"+":""}${t.gd}</td>
         <td style="width:64px"><span class="miniq" style="background:${h.bg};color:${h.fg}">${pct(t.p_qualify)}</span></td>
@@ -1238,7 +1251,7 @@ function projTeam(slot,g){
   const [kind,grp]=slot;
   if(kind==="3") return {label:"3rd "+CAND[grp].split("").join("/"),cls:"tbd",seed:"3"};
   const t=(g[grp]||[]).find(x=>x.pos===(kind==="W"?1:2));
-  return {label:t?t.name:"—",cls:"proj",seed:(kind==="W"?"1":"2")+grp};
+  return {label:t?t.name:"—",cls:"proj",seed:(kind==="W"?"1":"2")+grp,code:t?t.code:null};
 }
 function renderBracket(){
   const g=byGroup(), host=document.getElementById("bracket"); host.innerHTML="";
@@ -1250,8 +1263,8 @@ function renderBracket(){
       if(R32[id]){ a=projTeam(R32[id][0],g); b=projTeam(R32[id][1],g); }
       else { const [x,y]=KO[id]; a={label:"Winner "+x,cls:"tbd",seed:"M"+x}; b={label:"Winner "+y,cls:"tbd",seed:"M"+y}; }
       html+=`<div class="mt"><div class="mhd"><div class="mno"><span>Match ${id}</span><span>${DATE[id]||""}</span></div>${LOC[id]?`<div class="mloc">${LOC[id]}</div>`:""}</div>
-        <div class="slot ${a.cls}"><span>${a.label}</span><span class="seed">${a.seed}</span></div>
-        <div class="slot ${b.cls}"><span>${b.label}</span><span class="seed">${b.seed}</span></div></div>`;
+        <div class="slot ${a.cls}"><span>${a.code?flag(a.code,15)+" ":""}${a.label}</span><span class="seed">${a.seed}</span></div>
+        <div class="slot ${b.cls}"><span>${b.code?flag(b.code,15)+" ":""}${b.label}</span><span class="seed">${b.seed}</span></div></div>`;
     });
     col.innerHTML=html; host.appendChild(col);
   });
@@ -1264,7 +1277,7 @@ function renderTable(){
     <th class="name" data-k="name">Team</th><th data-k="group">Grp</th><th data-k="elo">Elo</th>
     <th data-k="pts">Pts</th>${ROUNDS.map(([k,l])=>`<th data-k="${k}">${l}</th>`).join("")}</tr></thead><tbody>`;
   teams.forEach(t=>{
-    h+=`<tr class="clickable" role="button" tabindex="0" data-code="${t.code}" aria-label="${t.name} — open details" onclick="openTeam('${t.code}')"><td class="name">${t.name}</td><td class="code">${t.group}</td><td>${t.elo}</td><td>${t.pts}</td>`;
+    h+=`<tr class="clickable" role="button" tabindex="0" data-code="${t.code}" aria-label="${t.name} — open details" onclick="openTeam('${t.code}')"><td class="name">${flag(t.code,18)} ${t.name}</td><td class="code">${t.group}</td><td>${t.elo}</td><td>${t.pts}</td>`;
     ROUNDS.forEach(([k])=>{const c=heat(t[k]); h+=`<td class="p" style="background:${c.bg};color:${c.fg}">${pct(t[k])}</td>`;});
     h+="</tr>";
   });
