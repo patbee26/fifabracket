@@ -43,6 +43,8 @@ def main() -> int:
     ap.add_argument("--sims", type=int, default=config.DEFAULT_SIMS)
     ap.add_argument("--seed", type=int, default=12345)
     ap.add_argument("--refresh", action="store_true")
+    ap.add_argument("--guard", action="store_true",
+                    help="skip publishing if completed-results dropped (flaky-fetch protection)")
     ap.add_argument("--top", type=int, default=24)
     args = ap.parse_args()
 
@@ -73,13 +75,29 @@ def main() -> int:
         } for t in teams],
     }
     payload_json = json.dumps(out, ensure_ascii=False, indent=2)
+    web_dir = config.BASE_DIR / "web"
+    web_odds = web_dir / "odds.json"
+
+    # Completed results only ever grow during a tournament; a drop means a flaky live
+    # fetch. Under --guard (the pipeline), keep the last good odds rather than regress.
+    if args.guard and web_odds.exists():
+        try:
+            published = json.loads(web_odds.read_text(encoding="utf-8")).get("completed_results", 0)
+        except Exception:
+            published = 0
+        if out["completed_results"] < published:
+            print(f"guard: {out['completed_results']} completed results < published {published} "
+                  f"(likely a flaky fetch) — keeping last good, not publishing.")
+            return 0
+
     config.ODDS_OUT.write_text(payload_json, encoding="utf-8")
-    web_odds = config.BASE_DIR / "web" / "odds.json"   # publish to the static site too
-    if web_odds.parent.exists():
+    if web_dir.exists():
+        if web_odds.exists():   # keep the prior run for the "why it moved" diff (Phase 5)
+            (web_dir / "odds.prev.json").write_text(web_odds.read_text(encoding="utf-8"), encoding="utf-8")
         web_odds.write_text(payload_json, encoding="utf-8")
-        # also bake the data into index.html's <script id="bootstrap"> so the page works
-        # when opened directly as a file:// (browsers block fetch of a local odds.json).
-        web_index = web_odds.parent / "index.html"
+        # bake the data into index.html's <script id="bootstrap"> so the page also works
+        # opened directly as a file:// (browsers block fetch of a local odds.json).
+        web_index = web_dir / "index.html"
         if web_index.exists():
             html = web_index.read_text(encoding="utf-8")
             html = re.sub(

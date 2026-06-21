@@ -1,0 +1,44 @@
+name: Update odds
+
+on:
+  schedule:
+    - cron: "0 * * * *"      # hourly, on the hour (UTC)
+  workflow_dispatch: {}        # plus a manual "Run workflow" button
+
+# allow the job to push the regenerated odds back to the repo
+permissions:
+  contents: write
+
+# never let two runs publish at once
+concurrency:
+  group: update-odds
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Phase 0-2 are stdlib-only, so there is nothing to install.
+      - name: Run pipeline (fetch -> model -> simulate -> publish)
+        env:
+          # optional cross-check source; works fine without it
+          FOOTBALL_DATA_TOKEN: ${{ secrets.FOOTBALL_DATA_TOKEN }}
+        run: python3 scripts/run_pipeline.py
+
+      - name: Commit & push if odds changed
+        run: |
+          git config user.name "wc-odds-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/
+          if git diff --staged --quiet; then
+            echo "No change in odds — nothing to publish."
+          else
+            git commit -m "chore: update odds ($(date -u +%Y-%m-%dT%H:%MZ))"
+            git push
+          fi

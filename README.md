@@ -6,9 +6,9 @@ recomputing as real results come in. Runs on free data + free hosting.
 - **Spec:** [`worldcup-odds-spec.md`](worldcup-odds-spec.md)
 - **Spec pressure-test (read this):** [`PRESSURE-TEST.md`](PRESSURE-TEST.md)
 
-> **Status:** Phases 0 (data) + 1 (model) + 2 (simulator) + 4 (front end) built and
-> verified. The tournament is underway — completed results flow through to live odds and
-> a self-refreshing bracket UI. (Phase 3, the automation pipeline, is next.)
+> **Status:** Phases 0 (data) + 1 (model) + 2 (simulator) + 3 (pipeline) + 4 (front end)
+> built and verified. The tournament is underway; an hourly GitHub Action refreshes the
+> odds and the self-updating bracket UI picks them up automatically.
 
 ## Quick start
 
@@ -25,6 +25,9 @@ python3 scripts/backtest.py          # walk-forward validation + favorites sanit
 
 # Phase 2 — simulator
 python3 scripts/simulate.py          # ~10k Monte Carlo runs -> odds.json (data/raw + web/) + board
+
+# Phase 3 — full update pipeline (what CI runs hourly): fetch -> model -> simulate -> publish
+python3 scripts/run_pipeline.py
 
 # Phase 4 — front end (static site in web/, reads odds.json)
 python3 -m http.server -d web 4318   # then open http://localhost:4318
@@ -79,9 +82,10 @@ data/
   aliases.json                  cross-source name variants
   third_place_allocation.json   Annex C: 495 third-place combinations (committed)
   raw/                          cached downloads + model.json + odds.json (gitignored)
-scripts/   check_sources.py · fetch_data.py · build_model.py · backtest.py · simulate.py
-tests/     offline unit tests (32 cases; run standalone or via pytest)
-web/       index.html (static dashboard) + odds.json — the deployable site
+scripts/   check_sources.py · fetch_data.py · build_model.py · backtest.py · simulate.py · run_pipeline.py
+tests/     offline unit tests (33 cases; run standalone or via pytest)
+web/       index.html (static dashboard) + odds.json (+ odds.prev.json) — the deployable site
+.github/workflows/   update-odds.yml (hourly publish) · ci.yml (tests on push)
 ```
 
 The site is **dependency-free** (one `index.html`, vanilla JS, no build step): title-race
@@ -97,10 +101,23 @@ snapshot; serving over http additionally enables the live fetch + auto-refresh.
 ## Roadmap
 
 Phase 0 **Data** ✅ → 1 **Model** ✅ → 2 **Simulator** ✅ → 4 **Front end** ✅ →
-3 Pipeline (GitHub Action, hourly: fetch → model → simulate → publish `odds.json`) →
-5 Explain (confidence + "why it moved" snapshot diff) → 6 Polish. *(Front end built ahead
-of the pipeline for visible mid-tournament payoff; it reads the committed `odds.json` until
-Phase 3 automates regeneration.)*
+3 **Pipeline** ✅ → 5 Explain (confidence + "why it moved" — `odds.prev.json` is already
+captured each run to enable this) → 6 Polish.
+
+### Automation (Phase 3)
+`.github/workflows/update-odds.yml` runs hourly (and on demand): it executes
+`scripts/run_pipeline.py` (refresh history → rebuild Elo + goals model → Monte Carlo →
+publish), then commits `web/` back to the repo — which triggers a Netlify redeploy. The
+open page auto-refreshes within 60 s and flashes whatever moved. Stdlib-only, so CI needs
+no install. Notes:
+- **No secrets required.** `FOOTBALL_DATA_TOKEN` is an optional repo secret for the extra
+  cross-check source; the pipeline runs fine on the token-free sources without it.
+- **Flaky-source guard.** Completed results only grow during a tournament, so if a live
+  fetch returns *fewer* than already published (e.g. the live API is down), the run keeps
+  the last-good odds instead of regressing. *(Observed live: the primary API was down and
+  the guard held the published odds — exactly as intended.)*
+- GitHub auto-disables scheduled workflows after 60 days of repo inactivity; commits from
+  the bot keep it alive through the tournament.
 
 **Phase 1 validation** (walk-forward, 5,793 competitive matches 2018→2026): log-loss
 **0.848** vs 1.051 baseline, RPS **0.166** (baseline 0.232), accuracy **61.8%** — genuine
