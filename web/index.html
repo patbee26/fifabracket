@@ -1297,7 +1297,10 @@ function closeModal(){ const m=document.getElementById("modal"); if(m.hidden) re
 
 function render(){
   const m=document.getElementById("meta");
-  m.innerHTML=`Results through <b>${fmtDate(DATA.as_of)}</b> · <b>${DATA.completed_results}</b> of 72 group games · <b>${DATA.n_sims.toLocaleString()}</b> simulations`;
+  const cr=DATA.completed_results;
+  const rnd = cr<=72?null : cr<=88?"Round of 32" : cr<=96?"Round of 16" : cr<=100?"Quarter-finals" : cr<=102?"Semi-finals" : "Final";
+  const prog = rnd ? `<b>${cr}</b> of 104 matches · ${rnd}` : `<b>${cr}</b> of 72 group games`;
+  m.innerHTML=`Results through <b>${fmtDate(DATA.as_of)}</b> · ${prog} · <b>${DATA.n_sims.toLocaleString()}</b> simulations`;
   renderCertainty(); renderChanged();
   renderRace(); renderGroups(); renderScenarios(); renderBracket(); renderMatchups(); renderMarket(); renderTable(); renderMethod();
   document.getElementById("foot").innerHTML=
