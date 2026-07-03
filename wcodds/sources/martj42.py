@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import csv
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from .. import config, net, normalize
 from ..models import Match
@@ -95,4 +95,22 @@ class Martj42Source(ResultsSource):
                 stage=config.STAGE_GROUP if group else "",
                 group=group, source=self.name,
             ))
+        return out
+
+    # -- penalty-shootout winners (a drawn knockout tie is decided on penalties) --
+    def shootouts(self) -> Dict[Tuple[str, str], str]:
+        """{sorted (code, code): winner_code} for WC2026 shootouts — the real winner
+        of a knockout tie whose score line records a draw."""
+        path = net.cached_download(config.MARTJ42_SHOOTOUTS,
+                                   config.RAW_DIR / "martj42_shootouts.csv", refresh=self.refresh)
+        out: Dict[Tuple[str, str], str] = {}
+        with path.open(encoding="utf-8") as fh:
+            for r in csv.DictReader(fh):
+                if r["date"] < config.TOURNAMENT_START:
+                    continue
+                h, a, w = (normalize.code_for(r["home_team"]),
+                           normalize.code_for(r["away_team"]),
+                           normalize.code_for(r["winner"]))
+                if h and a and w:
+                    out[tuple(sorted((h, a)))] = w
         return out

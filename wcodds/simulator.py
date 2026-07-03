@@ -290,3 +290,95 @@ def run(ratings: Dict[str, float], goals: GoalsModel, completed: Completed,
         scenarios[code] = {"qualify": counts[code]["qualify"], "next_opp": opp_code,
                            "branches": branches.get(code)}
     return probs, n, matchups, scenarios
+
+
+def resolve_bracket(completed: Completed, shootouts: Dict[Tuple[str, str], str],
+                    ratings: Dict[str, float]) -> dict:
+    """Resolve the ACTUAL knockout bracket from results played so far (deterministic,
+    no simulation): each match's real teams, score, and winner (penalties included),
+    with winners propagated forward. Undetermined slots stay None so the UI can fall
+    back to projections."""
+    group_fixtures = load_group_fixtures()
+    members = _group_members()
+    elo = lambda c: ratings.get(c, 1500.0)
+
+    winners: Dict[str, str] = {}
+    runners: Dict[str, str] = {}
+    third_team: Dict[str, str] = {}
+    third_stat: Dict[str, Stat] = {}
+    groups_done = True
+    for g, fixtures in group_fixtures.items():
+        played = []
+        for a, b in fixtures:
+            key = _pair(a, b)
+            if key not in completed:
+                continue
+            slo, shi = completed[key]
+            lo, hi = key
+            hs, as_ = (slo, shi) if (a, b) == (lo, hi) else (shi, slo)
+            played.append((a, b, hs, as_))
+        if len(played) < len(fixtures):
+            groups_done = False
+        order = standings.rank_group(members[g], played, elo)
+        winners[g], runners[g], third_team[g] = order[0], order[1], order[2]
+        third_stat[order[2]] = standings.team_stats(members[g], played)[order[2]]
+
+    alloc = None
+    if groups_done:
+        best = set(standings.rank_thirds(third_stat, elo)[:config.BEST_THIRDS])
+        qualifying = frozenset(g for g in group_fixtures if third_team[g] in best)
+        try:
+            alloc = bracket.thirds_assignment(qualifying)
+        except KeyError:
+            alloc = None
+
+    m_team: Dict[int, Tuple] = {}
+    m_win: Dict[int, str] = {}
+    m_lose: Dict[int, str] = {}
+    m_score: Dict[int, Tuple[int, int]] = {}
+    m_pens: Dict[int, bool] = {}
+
+    def slot_team(slot):
+        kind, ref = slot
+        if kind == "W":
+            return winners.get(ref) if groups_done else None
+        if kind == "RU":
+            return runners.get(ref) if groups_done else None
+        return third_team.get(alloc[ref]) if (alloc and ref in alloc) else None
+
+    def settle(mid, a, b):
+        m_team[mid] = (a, b)
+        if not (a and b):
+            return
+        key = _pair(a, b)
+        if key not in completed:
+            return
+        slo, shi = completed[key]
+        lo, hi = key
+        sa, sb = (slo, shi) if (a, b) == (lo, hi) else (shi, slo)
+        m_score[mid] = (sa, sb)
+        if sa != sb:
+            w = a if sa > sb else b
+        else:
+            w = shootouts.get(key)
+            m_pens[mid] = True
+        if w:
+            m_win[mid] = w
+            m_lose[mid] = b if w == a else a
+
+    for mid, (sa, sb) in bracket.R32.items():
+        settle(mid, slot_team(sa), slot_team(sb))
+    for mid in sorted(bracket.KO_TREE):
+        (ka, ra), (kb, rb) = bracket.KO_TREE[mid]
+        a = m_win.get(ra) if ka == "W" else m_lose.get(ra)
+        b = m_win.get(rb) if kb == "W" else m_lose.get(rb)
+        settle(mid, a, b)
+
+    matches = {}
+    for mid in list(bracket.R32) + sorted(bracket.KO_TREE):
+        a, b = m_team.get(mid, (None, None))
+        sc = m_score.get(mid)
+        matches[str(mid)] = {"a": a, "b": b,
+                             "sa": sc[0] if sc else None, "sb": sc[1] if sc else None,
+                             "w": m_win.get(mid), "pens": m_pens.get(mid, False)}
+    return {"groups_done": groups_done, "matches": matches}

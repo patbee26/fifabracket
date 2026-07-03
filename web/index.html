@@ -138,8 +138,13 @@
   .mt .slot{display:flex;justify-content:space-between;gap:8px;padding:2px 0;align-items:center}
   .mt .slot .nm{display:flex;align-items:center;gap:6px;min-width:0;flex:1 1 auto}
   .mt .slot .nm .tn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .mt .slot.proj{color:var(--ink)}
+  .mt .slot.proj,.mt .slot.actual{color:var(--ink)}
   .mt .slot.tbd{color:var(--faint)}
+  .mt .slot.win{color:var(--ink);font-weight:700}
+  .mt .slot.win .sc{color:var(--accent)}
+  .mt .slot.lose{color:var(--faint)}
+  .mt .slot .sc{font-variant-numeric:tabular-nums;font-weight:700;font-size:12.5px;flex:none}
+  .mt .slot .pk{font-size:8px;color:var(--accent);vertical-align:super;margin-left:1px;font-weight:700}
   .mt .slot .seed{font-family:var(--mono);font-size:10px;color:var(--faint);flex:none}
   .col:not(:last-child) .mt::after{content:"";position:absolute;right:-11px;top:50%;width:11px;height:1px;background:var(--line2)}
   .col:not(:first-child) .mw::before{content:"";position:absolute;left:-11px;top:25%;height:50%;width:1px;background:var(--line2)}
@@ -246,8 +251,8 @@
   </section>
 
   <section class="tab" id="tab-bracket" role="tabpanel">
-    <h2 class="sec">Projected bracket</h2>
-    <p class="lead">The fixed 2026 knockout structure. Group slots are filled by current standings and firm up as the group stage finishes; third-placed slots resolve via the FIFA allocation table.</p>
+    <h2 class="sec">Knockout bracket</h2>
+    <p class="lead">The 2026 knockout tree with live results — played matches show the score with the winner in bold (<b>ᵖ</b> = won on penalties), and winners advance automatically. Slots not yet decided show the projected group qualifiers or a "Winner Match n" placeholder.</p>
     <div class="bracket" id="bracket"></div>
   </section>
 
@@ -1110,7 +1115,7 @@
 <script>
 const ODDS_URL = "odds.json";
 const ROUNDS = [["p_qualify","R32"],["p_r16","R16"],["p_qf","QF"],["p_sf","SF"],["p_final","Final"],["p_champion","Win"]];
-let DATA=null, PREV=null, MU=null, SCN=null, prevWin={}, sortKey="p_champion", sortAsc=false;
+let DATA=null, PREV=null, MU=null, SCN=null, BR=null, prevWin={}, sortKey="p_champion", sortAsc=false;
 let muTeam=null, muRound="r16";
 
 const pct = p => (p*100).toFixed(p>=0.0995?0:1)+"%";
@@ -1384,8 +1389,21 @@ function seedTip(s){
   if(s[0]==="2") return "Runner-up of Group "+s.slice(1);
   return "";
 }
+function teamName(code){ const t=DATA.teams.find(x=>x.code===code); return t?t.name:code; }
+function koSlot(id,side){   // actual resolved team/result from bracket.json, or null to fall back
+  const m=(BR&&BR.matches)?BR.matches[String(id)]:null;
+  const code=m?(side==="a"?m.a:m.b):null;
+  if(!code) return null;
+  const score=side==="a"?m.sa:m.sb, played=score!=null;
+  return {code, label:teamName(code), score,
+          cls: played?(m.w===code?"win":"lose"):"actual",
+          pens: played && m.pens && m.w===code};
+}
 function bSlot(s){
-  return `<div class="slot ${s.cls}"><span class="nm">${s.code?flag(s.code,15):""}<span class="tn">${s.label}</span></span><span class="seed" data-tip="${seedTip(s.seed)}">${s.seed}</span></div>`;
+  const right=(s.score!=null)
+    ? `<span class="sc">${s.score}${s.pens?`<span class="pk" data-tip="Won on penalties">p</span>`:""}</span>`
+    : (s.seed?`<span class="seed" data-tip="${seedTip(s.seed)}">${s.seed}</span>`:"");
+  return `<div class="slot ${s.cls}"><span class="nm">${s.code?flag(s.code,15):""}<span class="tn">${s.label}</span></span>${right}</div>`;
 }
 function renderBracket(){
   const g=byGroup(), host=document.getElementById("bracket"); host.innerHTML="";
@@ -1396,6 +1414,7 @@ function renderBracket(){
       let a,b;
       if(R32[id]){ a=projTeam(R32[id][0],g); b=projTeam(R32[id][1],g); }
       else { const [x,y]=KO[id]; a={label:"Winner "+x,cls:"tbd",seed:"M"+x}; b={label:"Winner "+y,cls:"tbd",seed:"M"+y}; }
+      a=koSlot(id,"a")||a; b=koSlot(id,"b")||b;   // actual result overrides the projection
       const hdrTip=LOC[id]?` data-tip="Match ${id} · ${DATE[id]||""} · ${LOC[id]}"`:"";
       html+=`<div class="mw"><div class="mt"><div class="mhd"><div class="mno"${hdrTip}><span>Match ${id}</span><span>${DATE[id]||""}</span></div>${LOC[id]?`<div class="mloc">${LOC[id]}</div>`:""}</div>
         ${bSlot(a)}${bSlot(b)}</div></div>`;
@@ -1520,6 +1539,7 @@ async function load(){
     try{ const rp=await fetch("odds.prev.json?t="+Date.now(),{cache:"no-store"}); if(rp.ok) PREV=await rp.json(); }catch(e){}
     if(!MU){ try{ const rm=await fetch("matchups.json?t="+Date.now(),{cache:"no-store"}); if(rm.ok) MU=await rm.json(); }catch(e){} }
     try{ const rs=await fetch("scenarios.json?t="+Date.now(),{cache:"no-store"}); if(rs.ok) SCN=await rs.json(); }catch(e){}
+    try{ const rb=await fetch("bracket.json?t="+Date.now(),{cache:"no-store"}); if(rb.ok) BR=await rb.json(); }catch(e){}
     DATA=d; render();   // always re-render: picks up the prev snapshot + flashes any moves
   }catch(e){
     if(!DATA)showErr(`Couldn't load <code>odds.json</code> (${e.message}).<br>Serve the folder over http: <code>python3 -m http.server -d web 4318</code>`);
