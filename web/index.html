@@ -79,6 +79,22 @@
   .opppct{text-align:right;font-weight:700;font-size:13.5px}
   .adv{font-size:11.5px;font-weight:600;text-align:right;white-space:nowrap}
 
+  /* model vs market */
+  .mkt-note{font-size:12.5px;color:var(--muted);background:var(--surface2);border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px}
+  .mkt{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:11px 14px;margin-bottom:9px}
+  .mkt-hd{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px}
+  .mkt-hd .nm{font-weight:600;font-size:14px;display:flex;align-items:center;gap:8px;min-width:0}
+  .mkt .edge{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:6px;white-space:nowrap;flex:none}
+  .mkt .edge.up{background:rgba(var(--accent-rgb),.14);color:var(--qual)}
+  .mkt .edge.dn{background:rgba(178,59,59,.13);color:var(--out)}
+  .mkt .cmp{display:grid;grid-template-columns:50px 1fr 46px;align-items:center;gap:10px;margin-top:4px}
+  .mkt .cmp .lbl{font-size:11.5px;color:var(--muted)}
+  .mkt .cmp .track{height:14px;background:var(--surface2);border-radius:4px;overflow:hidden}
+  .mkt .cmp .fill{height:100%;border-radius:4px}
+  .mkt .cmp .fill.model{background:var(--accent)}
+  .mkt .cmp .fill.market{background:var(--faint)}
+  .mkt .cmp .v{text-align:right;font-weight:600;font-size:12.5px;font-variant-numeric:tabular-nums}
+
   /* clinching scenarios */
   .scn-team{padding:9px 0 10px;border-top:1px solid var(--line)}
   .scn-team:first-child{border-top:none;padding-top:2px}
@@ -224,6 +240,7 @@
     <button role="tab" aria-selected="false" data-tab="scenarios">Scenarios</button>
     <button role="tab" aria-selected="false" data-tab="bracket">Bracket</button>
     <button role="tab" aria-selected="false" data-tab="matchups">Matchups</button>
+    <button role="tab" aria-selected="false" data-tab="market">vs Market</button>
     <button role="tab" aria-selected="false" data-tab="table">All teams</button>
     <button role="tab" aria-selected="false" data-tab="method">Method</button>
   </nav>
@@ -260,6 +277,12 @@
     <h2 class="sec">Matchup explorer</h2>
     <p class="lead">Pick a team and a round to see every opponent they could meet — and how likely each draw is — across the 10,000 simulations. Click an opponent for their details.</p>
     <div id="matchups"></div>
+  </section>
+
+  <section class="tab" id="tab-market" role="tabpanel">
+    <h2 class="sec">Model vs the market</h2>
+    <p class="lead">Our model's chance to win the Cup next to the betting market's implied chance — and where they most disagree. A positive "edge" means the model rates a team higher than the market does.</p>
+    <div id="market"></div>
   </section>
 
   <section class="tab" id="tab-table" role="tabpanel">
@@ -1115,7 +1138,7 @@
 <script>
 const ODDS_URL = "odds.json";
 const ROUNDS = [["p_qualify","R32"],["p_r16","R16"],["p_qf","QF"],["p_sf","SF"],["p_final","Final"],["p_champion","Win"]];
-let DATA=null, PREV=null, MU=null, SCN=null, BR=null, prevWin={}, sortKey="p_champion", sortAsc=false;
+let DATA=null, PREV=null, MU=null, SCN=null, BR=null, MK=null, prevWin={}, sortKey="p_champion", sortAsc=false;
 let muTeam=null, muRound="r16";
 
 const pct = p => (p*100).toFixed(p>=0.0995?0:1)+"%";
@@ -1276,7 +1299,7 @@ function render(){
   const m=document.getElementById("meta");
   m.innerHTML=`Results through <b>${fmtDate(DATA.as_of)}</b> · <b>${DATA.completed_results}</b> of 72 group games · <b>${DATA.n_sims.toLocaleString()}</b> simulations`;
   renderCertainty(); renderChanged();
-  renderRace(); renderGroups(); renderScenarios(); renderBracket(); renderMatchups(); renderTable(); renderMethod();
+  renderRace(); renderGroups(); renderScenarios(); renderBracket(); renderMatchups(); renderMarket(); renderTable(); renderMethod();
   document.getElementById("foot").innerHTML=
     `Model: Elo + Dixon-Coles Poisson + Monte Carlo. Free data (martj42 · worldcup26.ir · football-data.org). Personal, non-commercial. Not betting advice.`;
   DATA.teams.forEach(t=>prevWin[t.code]=t.p_champion);
@@ -1423,6 +1446,26 @@ function renderBracket(){
   });
 }
 
+function renderMarket(){
+  const host=document.getElementById("market");
+  if(!MK||!MK.teams){ host.innerHTML=`<p class="lead">Market snapshot isn't available${location.protocol==="file:"?" when opened as a file — serve over http":""}.</p>`; return; }
+  const model={}; DATA.teams.forEach(t=>model[t.code]=t.p_champion);
+  const rows=Object.keys(MK.teams).map(c=>({c,mk:MK.teams[c],md:model[c]||0}));
+  const max=Math.max(...rows.map(r=>Math.max(r.mk,r.md)),0.01);
+  rows.sort((a,b)=>b.mk-a.mk);
+  const pp=x=>(Math.abs(x)*100).toFixed(1);
+  const dis=[...rows].sort((a,b)=>Math.abs(b.md-b.mk)-Math.abs(a.md-a.mk)).slice(0,3);
+  let html=`<div class="mkt-note">Static snapshot of published outright-winner odds as of <b>${fmtDate(MK.as_of)}</b>, de-vigged (${MK.vig}% margin removed) to an implied probability. The <b>model</b> column updates live; the <b>market</b> column is a one-time snapshot and does not.</div>`;
+  html+=`<p class="lead" style="margin:12px 0 16px">Biggest gaps: `+dis.map(r=>{const d=r.md-r.mk;return `${teamName(r.c)} <b class="${d>=0?'up':'down'}">${d>=0?'model':'market'} +${pp(d)}</b>`;}).join(" · ")+`</p>`;
+  rows.forEach(r=>{
+    const d=r.md-r.mk, up=d>=0;
+    html+=`<div class="mkt"><div class="mkt-hd"><span class="nm">${flag(r.c,20)}${teamName(r.c)}</span>`+
+      `<span class="edge ${up?"up":"dn"}" data-tip="Model minus market, in percentage points. Positive = the model rates them higher than the betting market does.">${up?"model":"market"} +${pp(d)} pp</span></div>`+
+      `<div class="cmp"><span class="lbl" data-tip="Our model's chance to win the tournament (updates live).">Model</span><div class="track"><div class="fill model" style="width:${Math.max(1.5,r.md/max*100)}%"></div></div><span class="v">${(r.md*100).toFixed(1)}%</span></div>`+
+      `<div class="cmp"><span class="lbl" data-tip="Implied chance from published bookmaker odds, de-vigged (static snapshot).">Market</span><div class="track"><div class="fill market" style="width:${Math.max(1.5,r.mk/max*100)}%"></div></div><span class="v">${(r.mk*100).toFixed(1)}%</span></div></div>`;
+  });
+  host.innerHTML=html;
+}
 function renderTable(){
   const teams=[...DATA.teams].sort((a,b)=> (sortAsc?1:-1)*((a[sortKey]>b[sortKey])?1:(a[sortKey]<b[sortKey])?-1:0));
   const th=k=>`class="${sortKey===k?"sorted"+(sortAsc?" asc":""):""}"`;
@@ -1540,6 +1583,7 @@ async function load(){
     if(!MU){ try{ const rm=await fetch("matchups.json?t="+Date.now(),{cache:"no-store"}); if(rm.ok) MU=await rm.json(); }catch(e){} }
     try{ const rs=await fetch("scenarios.json?t="+Date.now(),{cache:"no-store"}); if(rs.ok) SCN=await rs.json(); }catch(e){}
     try{ const rb=await fetch("bracket.json?t="+Date.now(),{cache:"no-store"}); if(rb.ok) BR=await rb.json(); }catch(e){}
+    if(!MK){ try{ const rk=await fetch("market.json?t="+Date.now(),{cache:"no-store"}); if(rk.ok) MK=await rk.json(); }catch(e){} }
     DATA=d; render();   // always re-render: picks up the prev snapshot + flashes any moves
   }catch(e){
     if(!DATA)showErr(`Couldn't load <code>odds.json</code> (${e.message}).<br>Serve the folder over http: <code>python3 -m http.server -d web 4318</code>`);
