@@ -1,21 +1,21 @@
 {
-  "as_of": "2026-07-02",
+  "as_of": "2026-07-03",
   "n_sims": 10000,
   "completed_results": 88,
   "model_params": {
-    "b0": 0.11060663889709954,
-    "b_elo": 0.18601414045060075,
-    "b_home": 0.2522703390965107,
+    "b0": 0.11062093814286715,
+    "b_elo": 0.18598670572126316,
+    "b_home": 0.25229981755202946,
     "rho": -0.042,
-    "n_records": 23356,
-    "mean_goals": 1.3881776818076657
+    "n_records": 23359,
+    "mean_goals": 1.3881692240470866
   },
   "teams": [
     {
       "code": "ARG",
       "name": "Argentina",
       "group": "J",
-      "elo": 2225,
+      "elo": 2228,
       "played": 3,
       "pts": 9,
       "gd": 7,
@@ -24,9 +24,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 0.8562,
-      "p_sf": 0.5986,
-      "p_final": 0.3854,
-      "p_champion": 0.229
+      "p_sf": 0.5963,
+      "p_final": 0.3866,
+      "p_champion": 0.2294
     },
     {
       "code": "ESP",
@@ -40,10 +40,10 @@
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.6785,
-      "p_sf": 0.5416,
-      "p_final": 0.3446,
-      "p_champion": 0.2066
+      "p_qf": 0.6758,
+      "p_sf": 0.5404,
+      "p_final": 0.3439,
+      "p_champion": 0.2047
     },
     {
       "code": "FRA",
@@ -57,10 +57,10 @@
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.7715,
-      "p_sf": 0.566,
-      "p_final": 0.3268,
-      "p_champion": 0.188
+      "p_qf": 0.7691,
+      "p_sf": 0.5639,
+      "p_final": 0.3256,
+      "p_champion": 0.187
     },
     {
       "code": "BRA",
@@ -74,10 +74,10 @@
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.6484,
-      "p_sf": 0.3294,
-      "p_final": 0.1501,
-      "p_champion": 0.0671
+      "p_qf": 0.648,
+      "p_sf": 0.3296,
+      "p_final": 0.15,
+      "p_champion": 0.0667
     },
     {
       "code": "ENG",
@@ -91,10 +91,10 @@
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.5191,
-      "p_sf": 0.2872,
-      "p_final": 0.1328,
-      "p_champion": 0.0606
+      "p_qf": 0.5173,
+      "p_sf": 0.2862,
+      "p_final": 0.1308,
+      "p_champion": 0.0588
     },
     {
       "code": "MEX",
@@ -108,16 +108,16 @@
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.4809,
-      "p_sf": 0.249,
-      "p_final": 0.1115,
-      "p_champion": 0.0521
+      "p_qf": 0.4827,
+      "p_sf": 0.2495,
+      "p_final": 0.1099,
+      "p_champion": 0.0515
     },
     {
       "code": "COL",
       "name": "Colombia",
       "group": "K",
-      "elo": 2088,
+      "elo": 2093,
       "played": 3,
       "pts": 7,
       "gd": 3,
@@ -125,10 +125,10 @@
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.579,
-      "p_sf": 0.2259,
-      "p_final": 0.1113,
-      "p_champion": 0.0461
+      "p_qf": 0.5881,
+      "p_sf": 0.2326,
+      "p_final": 0.1147,
+      "p_champion": 0.0488
     },
     {
       "code": "POR",
@@ -142,10 +142,10 @@
       "pos": 2,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.3215,
-      "p_sf": 0.2017,
-      "p_final": 0.0892,
-      "p_champion": 0.0395
+      "p_qf": 0.3242,
+      "p_sf": 0.2028,
+      "p_final": 0.091,
+      "p_champion": 0.0417
     },
     {
       "code": "NED",
@@ -158,11 +158,11 @@
       "gf": 10,
       "pos": 1,
       "p_qualify": 1.0,
-      "p_r16": 0.5263,
-      "p_qf": 0.3369,
-      "p_sf": 0.1319,
-      "p_final": 0.0532,
-      "p_champion": 0.0209
+      "p_r16": 0.5254,
+      "p_qf": 0.3353,
+      "p_sf": 0.1308,
+      "p_final": 0.0515,
+      "p_champion": 0.0195
     },
     {
       "code": "SUI",
@@ -176,10 +176,10 @@
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.421,
-      "p_sf": 0.1311,
-      "p_final": 0.0525,
-      "p_champion": 0.0192
+      "p_qf": 0.4119,
+      "p_sf": 0.1278,
+      "p_final": 0.052,
+      "p_champion": 0.019
     },
     {
       "code": "BEL",
@@ -193,10 +193,10 @@
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.5479,
-      "p_sf": 0.1519,
-      "p_final": 0.0536,
-      "p_champion": 0.0161
+      "p_qf": 0.5476,
+      "p_sf": 0.1512,
+      "p_final": 0.0546,
+      "p_champion": 0.0172
     },
     {
       "code": "MAR",
@@ -209,11 +209,11 @@
       "gf": 6,
       "pos": 2,
       "p_qualify": 1.0,
-      "p_r16": 0.4737,
-      "p_qf": 0.3001,
-      "p_sf": 0.1095,
-      "p_final": 0.0412,
-      "p_champion": 0.016
+      "p_r16": 0.4746,
+      "p_qf": 0.2982,
+      "p_sf": 0.1088,
+      "p_final": 0.0406,
+      "p_champion": 0.0157
     },
     {
       "code": "NOR",
@@ -227,27 +227,10 @@
       "pos": 2,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.3516,
-      "p_sf": 0.1344,
-      "p_final": 0.0449,
-      "p_champion": 0.011
-    },
-    {
-      "code": "GER",
-      "name": "Germany",
-      "group": "E",
-      "elo": 1989,
-      "played": 3,
-      "pts": 6,
-      "gd": 6,
-      "gf": 10,
-      "pos": 1,
-      "p_qualify": 1.0,
-      "p_r16": 0.6044,
-      "p_qf": 0.152,
-      "p_sf": 0.0736,
-      "p_final": 0.0265,
-      "p_champion": 0.009
+      "p_qf": 0.352,
+      "p_sf": 0.1347,
+      "p_final": 0.045,
+      "p_champion": 0.0113
     },
     {
       "code": "USA",
@@ -261,10 +244,27 @@
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.4521,
-      "p_sf": 0.1048,
-      "p_final": 0.0335,
-      "p_champion": 0.0087
+      "p_qf": 0.4524,
+      "p_sf": 0.1056,
+      "p_final": 0.0348,
+      "p_champion": 0.0094
+    },
+    {
+      "code": "GER",
+      "name": "Germany",
+      "group": "E",
+      "elo": 1989,
+      "played": 3,
+      "pts": 6,
+      "gd": 6,
+      "gf": 10,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 0.6054,
+      "p_qf": 0.1535,
+      "p_sf": 0.0758,
+      "p_final": 0.0266,
+      "p_champion": 0.009
     },
     {
       "code": "CAN",
@@ -278,10 +278,10 @@
       "pos": 2,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.363,
-      "p_sf": 0.09,
-      "p_final": 0.0255,
-      "p_champion": 0.0062
+      "p_qf": 0.3665,
+      "p_sf": 0.0914,
+      "p_final": 0.0252,
+      "p_champion": 0.0066
     },
     {
       "code": "PAR",
@@ -294,45 +294,45 @@
       "gf": 2,
       "pos": 3,
       "p_qualify": 1.0,
-      "p_r16": 0.3956,
-      "p_qf": 0.0765,
-      "p_sf": 0.029,
-      "p_final": 0.0059,
-      "p_champion": 0.0017
+      "p_r16": 0.3946,
+      "p_qf": 0.0774,
+      "p_sf": 0.0293,
+      "p_final": 0.0062,
+      "p_champion": 0.0019
     },
     {
       "code": "AUS",
       "name": "Australia",
       "group": "D",
-      "elo": 1913,
+      "elo": 1908,
       "played": 3,
       "pts": 4,
       "gd": 0,
       "gf": 2,
       "pos": 2,
       "p_qualify": 1.0,
-      "p_r16": 0.5628,
-      "p_qf": 0.0904,
-      "p_sf": 0.0281,
-      "p_final": 0.0076,
-      "p_champion": 0.0012
+      "p_r16": 0.5552,
+      "p_qf": 0.0893,
+      "p_sf": 0.0274,
+      "p_final": 0.0075,
+      "p_champion": 0.001
     },
     {
       "code": "EGY",
       "name": "Egypt",
       "group": "G",
-      "elo": 1861,
+      "elo": 1866,
       "played": 3,
       "pts": 5,
       "gd": 2,
       "gf": 5,
       "pos": 2,
       "p_qualify": 1.0,
-      "p_r16": 0.4372,
-      "p_qf": 0.0534,
-      "p_sf": 0.0163,
-      "p_final": 0.0039,
-      "p_champion": 0.001
+      "p_r16": 0.4448,
+      "p_qf": 0.0545,
+      "p_sf": 0.0159,
+      "p_final": 0.0035,
+      "p_champion": 0.0008
     },
     {
       "code": "RSA",
@@ -610,7 +610,7 @@
       "code": "CPV",
       "name": "Cape Verde",
       "group": "H",
-      "elo": 1702,
+      "elo": 1699,
       "played": 3,
       "pts": 3,
       "gd": 0,
@@ -797,7 +797,7 @@
       "code": "GHA",
       "name": "Ghana",
       "group": "L",
-      "elo": 1688,
+      "elo": 1682,
       "played": 3,
       "pts": 4,
       "gd": 0,
