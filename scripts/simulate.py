@@ -20,6 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from wcodds import config, fetch, model, normalize, simulator  # noqa: E402
+from wcodds.sources.martj42 import Martj42Source  # noqa: E402
 
 
 def load_completed(refresh: bool) -> dict:
@@ -54,9 +55,11 @@ def main() -> int:
     payload, goals = model.load()
     ratings = {c: float(v) for c, v in payload["wc_ratings"].items()}
     completed = load_completed(args.refresh)
+    shootouts = Martj42Source(refresh=args.refresh).shootouts()   # real penalty-shootout winners
 
     t0 = time.time()
-    probs, n, matchups, scenarios = simulator.run(ratings, goals, completed, n=args.sims, seed=args.seed)
+    probs, n, matchups, scenarios = simulator.run(ratings, goals, completed,
+                                                  shootouts=shootouts, n=args.sims, seed=args.seed)
     dt = time.time() - t0
 
     cur = simulator.current_standings(completed, ratings)
@@ -91,8 +94,6 @@ def main() -> int:
     scenarios_json = json.dumps({"n_sims": n, "teams": scenarios}, ensure_ascii=False, separators=(",", ":"))
 
     # live knockout bracket: actual teams / scores / winners resolved from results so far
-    from wcodds.sources.martj42 import Martj42Source
-    shootouts = Martj42Source(refresh=args.refresh).shootouts()
     bracket_state = simulator.resolve_bracket(completed, shootouts, ratings)
     bracket_state["as_of"] = payload.get("as_of", "")
     bracket_json = json.dumps(bracket_state, ensure_ascii=False, separators=(",", ":"))

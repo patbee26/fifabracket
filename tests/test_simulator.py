@@ -57,6 +57,21 @@ def test_completed_result_is_respected():
     assert probs["BRA"]["qualify"] >= probs["HAI"]["qualify"]
 
 
+def test_shootout_winner_decides_a_drawn_knockout_tie():
+    # A knockout tie drawn in regulation must be resolved by the recorded penalty
+    # winner, never re-simulated — so the real loser stays out.
+    import random
+    from wcodds.simulator import _ko_winner, Sampler
+    sampler = Sampler({"GER": 1900, "PAR": 1500}, GOALS, random.Random(1))
+    completed = {("GER", "PAR"): (1, 1)}      # drawn in regulation
+    shootouts = {("GER", "PAR"): "PAR"}        # Paraguay won the shootout
+    for _ in range(30):
+        assert _ko_winner("GER", "PAR", 74, completed, shootouts, sampler) == "PAR"
+        assert _ko_winner("PAR", "GER", 74, completed, shootouts, sampler) == "PAR"  # orientation-free
+    # without the shootout record it falls back to simulation (either side can win)
+    assert _ko_winner("GER", "PAR", 74, completed, {}, sampler) in ("GER", "PAR")
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0

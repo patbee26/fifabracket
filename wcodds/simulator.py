@@ -138,7 +138,7 @@ def current_standings(completed: Completed, ratings: Dict[str, float]) -> Dict[s
 
 def simulate_once(sampler: Sampler, group_fixtures: Dict[str, List[Pair]],
                   members: Dict[str, List[str]], completed: Completed,
-                  elo) -> Dict[str, set]:
+                  shootouts: Dict[Pair, str], elo) -> Dict[str, set]:
     winners: Dict[str, str] = {}
     runners: Dict[str, str] = {}
     third_team: Dict[str, str] = {}
@@ -189,7 +189,7 @@ def simulate_once(sampler: Sampler, group_fixtures: Dict[str, List[Pair]],
         qualified.add(a); qualified.add(b)
         opp.setdefault(a, {})["r32"] = b
         opp.setdefault(b, {})["r32"] = a
-        w = _ko_winner(a, b, mid, completed, sampler)
+        w = _ko_winner(a, b, mid, completed, shootouts, sampler)
         match_winner[mid] = w
         match_loser[mid] = b if w == a else a
 
@@ -204,7 +204,7 @@ def simulate_once(sampler: Sampler, group_fixtures: Dict[str, List[Pair]],
         if rnd:
             opp.setdefault(a, {})[rnd] = b
             opp.setdefault(b, {})[rnd] = a
-        w = _ko_winner(a, b, mid, completed, sampler)
+        w = _ko_winner(a, b, mid, completed, shootouts, sampler)
         match_winner[mid] = w
         match_loser[mid] = b if w == a else a
 
@@ -219,14 +219,19 @@ def simulate_once(sampler: Sampler, group_fixtures: Dict[str, List[Pair]],
     return reached, opp, gscores
 
 
-def _ko_winner(a: str, b: str, mid: int, completed: Completed, sampler: Sampler) -> str:
-    """Use a real result if this knockout tie has already been played, else sim."""
+def _ko_winner(a: str, b: str, mid: int, completed: Completed,
+               shootouts: Dict[Pair, str], sampler: Sampler) -> str:
+    """Use a real result if this knockout tie has already been played, else sim.
+    A tie drawn in regulation is decided by its recorded penalty-shootout winner
+    (not re-simulated), so the real loser stays eliminated."""
     key = _pair(a, b)
     if key in completed:
         slo, shi = completed[key]
-        if slo != shi:  # decisive in regulation/recorded
+        if slo != shi:  # decisive in regulation
             lo, hi = key
             return lo if slo > shi else hi
+        if key in shootouts:  # drawn in regulation -> real shootout winner
+            return shootouts[key]
     return sampler.advance(a, b)
 
 
@@ -245,11 +250,13 @@ def _next_games(group_fixtures: Dict[str, List[Pair]], completed: Completed) -> 
 
 
 def run(ratings: Dict[str, float], goals: GoalsModel, completed: Completed,
-        n: int = config.DEFAULT_SIMS, seed: int = 12345):
+        shootouts: Dict[Pair, str] = None, n: int = config.DEFAULT_SIMS, seed: int = 12345):
     """Returns (probs, n, matchups, scenarios).
     matchups[code][round] = {opponent_code: count};
     scenarios[code] = {qualify, next_opp, branches:{W/D/L:[qualified,total]}} — the
-    chance to qualify conditional on each result of the team's next group game."""
+    chance to qualify conditional on each result of the team's next group game.
+    shootouts maps a sorted knockout pair to its real penalty-shootout winner."""
+    shootouts = shootouts or {}
     rng = random.Random(seed)
     sampler = Sampler(ratings, goals, rng)
     group_fixtures = load_group_fixtures()
@@ -261,7 +268,7 @@ def run(ratings: Dict[str, float], goals: GoalsModel, completed: Completed,
     matchups = {code: {r: {} for r in MATCH_ROUNDS} for code in ratings}
     branches = {code: {"W": [0, 0], "D": [0, 0], "L": [0, 0]} for code in next_game}
     for _ in range(n):
-        reached, opp, gscores = simulate_once(sampler, group_fixtures, members, completed, elo)
+        reached, opp, gscores = simulate_once(sampler, group_fixtures, members, completed, shootouts, elo)
         qset = reached["qualify"]
         for rnd, teams in reached.items():
             for t in teams:
