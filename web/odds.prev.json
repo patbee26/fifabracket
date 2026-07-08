@@ -1,14 +1,14 @@
 {
-  "as_of": "2026-07-06",
+  "as_of": "2026-07-07",
   "n_sims": 10000,
-  "completed_results": 95,
+  "completed_results": 96,
   "model_params": {
-    "b0": 0.11071137303809639,
-    "b_elo": 0.18598947559418713,
-    "b_home": 0.2522283818866415,
-    "rho": -0.041,
-    "n_records": 23365,
-    "mean_goals": 1.38820370513117
+    "b0": 0.11071777564793768,
+    "b_elo": 0.18598323586045523,
+    "b_home": 0.2522319337224094,
+    "rho": -0.042,
+    "n_records": 23367,
+    "mean_goals": 1.388189502350795
   },
   "teams": [
     {
@@ -24,15 +24,15 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.7336,
-      "p_final": 0.4353,
-      "p_champion": 0.2589
+      "p_sf": 0.7388,
+      "p_final": 0.4379,
+      "p_champion": 0.2659
     },
     {
       "code": "ARG",
       "name": "Argentina",
       "group": "J",
-      "elo": 2228,
+      "elo": 2234,
       "played": 3,
       "pts": 9,
       "gd": 7,
@@ -41,9 +41,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.7024,
-      "p_final": 0.4502,
-      "p_champion": 0.2465
+      "p_sf": 0.747,
+      "p_final": 0.4776,
+      "p_champion": 0.2625
     },
     {
       "code": "FRA",
@@ -58,9 +58,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.6817,
-      "p_final": 0.3601,
-      "p_champion": 0.2124
+      "p_sf": 0.6911,
+      "p_final": 0.3581,
+      "p_champion": 0.2112
     },
     {
       "code": "ENG",
@@ -75,9 +75,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.6353,
-      "p_final": 0.2958,
-      "p_champion": 0.1336
+      "p_sf": 0.6317,
+      "p_final": 0.2896,
+      "p_champion": 0.1303
     },
     {
       "code": "MAR",
@@ -92,9 +92,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.3183,
-      "p_final": 0.1113,
-      "p_champion": 0.0461
+      "p_sf": 0.3089,
+      "p_final": 0.108,
+      "p_champion": 0.039
     },
     {
       "code": "BEL",
@@ -109,26 +109,26 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.2664,
-      "p_final": 0.0933,
-      "p_champion": 0.0326
+      "p_sf": 0.2612,
+      "p_final": 0.096,
+      "p_champion": 0.0337
     },
     {
-      "code": "COL",
-      "name": "Colombia",
-      "group": "K",
-      "elo": 2093,
+      "code": "SUI",
+      "name": "Switzerland",
+      "group": "B",
+      "elo": 2024,
       "played": 3,
       "pts": 7,
-      "gd": 3,
-      "gf": 4,
+      "gd": 4,
+      "gf": 7,
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
-      "p_qf": 0.5906,
-      "p_sf": 0.1931,
-      "p_final": 0.0903,
-      "p_champion": 0.0323
+      "p_qf": 1.0,
+      "p_sf": 0.253,
+      "p_final": 0.1035,
+      "p_champion": 0.0302
     },
     {
       "code": "NOR",
@@ -143,26 +143,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.3647,
-      "p_final": 0.1258,
-      "p_champion": 0.0255
-    },
-    {
-      "code": "SUI",
-      "name": "Switzerland",
-      "group": "B",
-      "elo": 2017,
-      "played": 3,
-      "pts": 7,
-      "gd": 4,
-      "gf": 7,
-      "pos": 1,
-      "p_qualify": 1.0,
-      "p_r16": 1.0,
-      "p_qf": 0.4094,
-      "p_sf": 0.1045,
-      "p_final": 0.0379,
-      "p_champion": 0.0121
+      "p_sf": 0.3683,
+      "p_final": 0.1293,
+      "p_champion": 0.0272
     },
     {
       "code": "MEX",
@@ -542,7 +525,7 @@
       "code": "EGY",
       "name": "Egypt",
       "group": "G",
-      "elo": 1866,
+      "elo": 1859,
       "played": 3,
       "pts": 5,
       "gd": 2,
@@ -771,6 +754,23 @@
       "pos": 4,
       "p_qualify": 0.0,
       "p_r16": 0.0,
+      "p_qf": 0.0,
+      "p_sf": 0.0,
+      "p_final": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "code": "COL",
+      "name": "Colombia",
+      "group": "K",
+      "elo": 2087,
+      "played": 3,
+      "pts": 7,
+      "gd": 3,
+      "gf": 4,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 1.0,
       "p_qf": 0.0,
       "p_sf": 0.0,
       "p_final": 0.0,
