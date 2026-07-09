@@ -1,7 +1,7 @@
 {
   "as_of": "2026-07-07",
   "n_sims": 10000,
-  "completed_results": 96,
+  "completed_results": 97,
   "model_params": {
     "b0": 0.11071777564793768,
     "b_elo": 0.18598323586045523,
@@ -12,21 +12,21 @@
   },
   "teams": [
     {
-      "code": "ESP",
-      "name": "Spain",
-      "group": "H",
-      "elo": 2242,
+      "code": "FRA",
+      "name": "France",
+      "group": "I",
+      "elo": 2206,
       "played": 3,
-      "pts": 7,
-      "gd": 5,
-      "gf": 5,
+      "pts": 9,
+      "gd": 8,
+      "gf": 10,
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.7388,
-      "p_final": 0.4379,
-      "p_champion": 0.2659
+      "p_sf": 1.0,
+      "p_final": 0.5191,
+      "p_champion": 0.3024
     },
     {
       "code": "ARG",
@@ -41,26 +41,26 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.747,
-      "p_final": 0.4776,
-      "p_champion": 0.2625
+      "p_sf": 0.7455,
+      "p_final": 0.4811,
+      "p_champion": 0.259
     },
     {
-      "code": "FRA",
-      "name": "France",
-      "group": "I",
-      "elo": 2206,
+      "code": "ESP",
+      "name": "Spain",
+      "group": "H",
+      "elo": 2242,
       "played": 3,
-      "pts": 9,
-      "gd": 8,
-      "gf": 10,
+      "pts": 7,
+      "gd": 5,
+      "gf": 5,
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.6911,
-      "p_final": 0.3581,
-      "p_champion": 0.2112
+      "p_sf": 0.7481,
+      "p_final": 0.4022,
+      "p_champion": 0.2375
     },
     {
       "code": "ENG",
@@ -75,26 +75,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.6317,
-      "p_final": 0.2896,
-      "p_champion": 0.1303
-    },
-    {
-      "code": "MAR",
-      "name": "Morocco",
-      "group": "C",
-      "elo": 2056,
-      "played": 3,
-      "pts": 7,
-      "gd": 3,
-      "gf": 6,
-      "pos": 2,
-      "p_qualify": 1.0,
-      "p_r16": 1.0,
-      "p_qf": 1.0,
-      "p_sf": 0.3089,
-      "p_final": 0.108,
-      "p_champion": 0.039
+      "p_sf": 0.6305,
+      "p_final": 0.2924,
+      "p_champion": 0.1233
     },
     {
       "code": "BEL",
@@ -109,9 +92,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.2612,
-      "p_final": 0.096,
-      "p_champion": 0.0337
+      "p_sf": 0.2519,
+      "p_final": 0.0787,
+      "p_champion": 0.0324
     },
     {
       "code": "SUI",
@@ -126,9 +109,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.253,
-      "p_final": 0.1035,
-      "p_champion": 0.0302
+      "p_sf": 0.2545,
+      "p_final": 0.1007,
+      "p_champion": 0.0277
     },
     {
       "code": "NOR",
@@ -143,9 +126,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.3683,
-      "p_final": 0.1293,
-      "p_champion": 0.0272
+      "p_sf": 0.3695,
+      "p_final": 0.1258,
+      "p_champion": 0.0177
     },
     {
       "code": "MEX",
@@ -279,6 +262,23 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 0.0,
+      "p_sf": 0.0,
+      "p_final": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "code": "MAR",
+      "name": "Morocco",
+      "group": "C",
+      "elo": 2056,
+      "played": 3,
+      "pts": 7,
+      "gd": 3,
+      "gf": 6,
+      "pos": 2,
+      "p_qualify": 1.0,
+      "p_r16": 1.0,
+      "p_qf": 1.0,
       "p_sf": 0.0,
       "p_final": 0.0,
       "p_champion": 0.0
