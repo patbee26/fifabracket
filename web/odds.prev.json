@@ -1,21 +1,21 @@
 {
-  "as_of": "2026-07-07",
+  "as_of": "2026-07-09",
   "n_sims": 10000,
   "completed_results": 97,
   "model_params": {
-    "b0": 0.11071777564793768,
-    "b_elo": 0.18598323586045523,
-    "b_home": 0.2522319337224094,
+    "b0": 0.11070064636503571,
+    "b_elo": 0.18598933926737332,
+    "b_home": 0.25223932604948607,
     "rho": -0.042,
-    "n_records": 23367,
-    "mean_goals": 1.388189502350795
+    "n_records": 23368,
+    "mean_goals": 1.3881695568400771
   },
   "teams": [
     {
       "code": "FRA",
       "name": "France",
       "group": "I",
-      "elo": 2206,
+      "elo": 2233,
       "played": 3,
       "pts": 9,
       "gd": 8,
@@ -25,8 +25,8 @@
       "p_r16": 1.0,
       "p_qf": 1.0,
       "p_sf": 1.0,
-      "p_final": 0.5191,
-      "p_champion": 0.3024
+      "p_final": 0.5556,
+      "p_champion": 0.3397
     },
     {
       "code": "ARG",
@@ -41,9 +41,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.7455,
-      "p_final": 0.4811,
-      "p_champion": 0.259
+      "p_sf": 0.7468,
+      "p_final": 0.4821,
+      "p_champion": 0.2519
     },
     {
       "code": "ESP",
@@ -58,9 +58,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.7481,
-      "p_final": 0.4022,
-      "p_champion": 0.2375
+      "p_sf": 0.7455,
+      "p_final": 0.3749,
+      "p_champion": 0.2212
     },
     {
       "code": "ENG",
@@ -75,9 +75,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.6305,
-      "p_final": 0.2924,
-      "p_champion": 0.1233
+      "p_sf": 0.63,
+      "p_final": 0.2917,
+      "p_champion": 0.1188
     },
     {
       "code": "BEL",
@@ -92,9 +92,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.2519,
-      "p_final": 0.0787,
-      "p_champion": 0.0324
+      "p_sf": 0.2545,
+      "p_final": 0.0695,
+      "p_champion": 0.0269
     },
     {
       "code": "SUI",
@@ -109,9 +109,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.2545,
-      "p_final": 0.1007,
-      "p_champion": 0.0277
+      "p_sf": 0.2532,
+      "p_final": 0.1001,
+      "p_champion": 0.0263
     },
     {
       "code": "NOR",
@@ -126,9 +126,9 @@
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
-      "p_sf": 0.3695,
-      "p_final": 0.1258,
-      "p_champion": 0.0177
+      "p_sf": 0.37,
+      "p_final": 0.1261,
+      "p_champion": 0.0152
     },
     {
       "code": "MEX",
@@ -270,7 +270,7 @@
       "code": "MAR",
       "name": "Morocco",
       "group": "C",
-      "elo": 2056,
+      "elo": 2029,
       "played": 3,
       "pts": 7,
       "gd": 3,
