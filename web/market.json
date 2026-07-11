@@ -1,20 +1,13 @@
 {
-"as_of": "2026-07-05",
-"vig": 12.8,
+"as_of": "2026-07-10",
+"vig": 8.5,
 "note": "Static snapshot of published outright-winner odds, de-vigged to implied probability. Does not auto-update.",
 "teams": {
-"FRA": 0.3359,
-"ARG": 0.1612,
-"ESP": 0.1344,
-"ENG": 0.0806,
-"BRA": 0.0739,
-"POR": 0.0633,
-"COL": 0.037,
-"MAR": 0.0341,
-"USA": 0.0269,
-"NOR": 0.0193,
-"BEL": 0.0174,
-"SUI": 0.0125,
-"EGY": 0.0035
+"FRA": 0.3686,
+"ESP": 0.2247,
+"ARG": 0.1739,
+"ENG": 0.1562,
+"NOR": 0.0542,
+"SUI": 0.0225
 }
 }
