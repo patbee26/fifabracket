@@ -1,16 +1,33 @@
 {
-  "as_of": "2026-07-10",
+  "as_of": "2026-07-11",
   "n_sims": 10000,
   "completed_results": 100,
   "model_params": {
-    "b0": 0.11072128629954646,
-    "b_elo": 0.18598838349426383,
-    "b_home": 0.252220210909149,
+    "b0": 0.11079461905342415,
+    "b_elo": 0.18598925825225274,
+    "b_home": 0.25214548260898034,
     "rho": -0.042,
-    "n_records": 23369,
-    "mean_goals": 1.388175302489275
+    "n_records": 23371,
+    "mean_goals": 1.3882124784875807
   },
   "teams": [
+    {
+      "code": "ARG",
+      "name": "Argentina",
+      "group": "J",
+      "elo": 2255,
+      "played": 3,
+      "pts": 9,
+      "gd": 7,
+      "gf": 8,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 1.0,
+      "p_qf": 1.0,
+      "p_sf": 1.0,
+      "p_final": 0.6058,
+      "p_champion": 0.3071
+    },
     {
       "code": "ESP",
       "name": "Spain",
@@ -25,25 +42,8 @@
       "p_r16": 1.0,
       "p_qf": 1.0,
       "p_sf": 1.0,
-      "p_final": 0.5301,
-      "p_champion": 0.3069
-    },
-    {
-      "code": "ARG",
-      "name": "Argentina",
-      "group": "J",
-      "elo": 2234,
-      "played": 3,
-      "pts": 9,
-      "gd": 7,
-      "gf": 8,
-      "pos": 1,
-      "p_qualify": 1.0,
-      "p_r16": 1.0,
-      "p_qf": 1.0,
-      "p_sf": 1.0,
-      "p_final": 0.6097,
-      "p_champion": 0.2936
+      "p_final": 0.5281,
+      "p_champion": 0.2918
     },
     {
       "code": "FRA",
@@ -59,14 +59,14 @@
       "p_r16": 1.0,
       "p_qf": 1.0,
       "p_sf": 1.0,
-      "p_final": 0.4699,
-      "p_champion": 0.2589
+      "p_final": 0.4719,
+      "p_champion": 0.2445
     },
     {
       "code": "ENG",
       "name": "England",
       "group": "L",
-      "elo": 2150,
+      "elo": 2171,
       "played": 3,
       "pts": 7,
       "gd": 4,
@@ -76,8 +76,8 @@
       "p_r16": 1.0,
       "p_qf": 1.0,
       "p_sf": 1.0,
-      "p_final": 0.3903,
-      "p_champion": 0.1406
+      "p_final": 0.3942,
+      "p_champion": 0.1566
     },
     {
       "code": "MEX",
@@ -202,7 +202,7 @@
       "code": "SUI",
       "name": "Switzerland",
       "group": "B",
-      "elo": 2024,
+      "elo": 2003,
       "played": 3,
       "pts": 7,
       "gd": 4,
@@ -644,7 +644,7 @@
       "code": "NOR",
       "name": "Norway",
       "group": "I",
-      "elo": 2042,
+      "elo": 2021,
       "played": 3,
       "pts": 6,
       "gd": 1,
