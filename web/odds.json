@@ -1,7 +1,7 @@
 {
   "as_of": "2026-07-11",
   "n_sims": 10000,
-  "completed_results": 100,
+  "completed_results": 101,
   "model_params": {
     "b0": 0.11079461905342415,
     "b_elo": 0.18598925825225274,
@@ -11,23 +11,6 @@
     "mean_goals": 1.3882124784875807
   },
   "teams": [
-    {
-      "code": "ARG",
-      "name": "Argentina",
-      "group": "J",
-      "elo": 2255,
-      "played": 3,
-      "pts": 9,
-      "gd": 7,
-      "gf": 8,
-      "pos": 1,
-      "p_qualify": 1.0,
-      "p_r16": 1.0,
-      "p_qf": 1.0,
-      "p_sf": 1.0,
-      "p_final": 0.6058,
-      "p_champion": 0.3071
-    },
     {
       "code": "ESP",
       "name": "Spain",
@@ -42,25 +25,25 @@
       "p_r16": 1.0,
       "p_qf": 1.0,
       "p_sf": 1.0,
-      "p_final": 0.5281,
-      "p_champion": 0.2918
+      "p_final": 1.0,
+      "p_champion": 0.5427
     },
     {
-      "code": "FRA",
-      "name": "France",
-      "group": "I",
-      "elo": 2233,
+      "code": "ARG",
+      "name": "Argentina",
+      "group": "J",
+      "elo": 2255,
       "played": 3,
       "pts": 9,
-      "gd": 8,
-      "gf": 10,
+      "gd": 7,
+      "gf": 8,
       "pos": 1,
       "p_qualify": 1.0,
       "p_r16": 1.0,
       "p_qf": 1.0,
       "p_sf": 1.0,
-      "p_final": 0.4719,
-      "p_champion": 0.2445
+      "p_final": 0.6018,
+      "p_champion": 0.301
     },
     {
       "code": "ENG",
@@ -76,8 +59,8 @@
       "p_r16": 1.0,
       "p_qf": 1.0,
       "p_sf": 1.0,
-      "p_final": 0.3942,
-      "p_champion": 0.1566
+      "p_final": 0.3982,
+      "p_champion": 0.1563
     },
     {
       "code": "MEX",
@@ -603,6 +586,23 @@
       "p_r16": 0.0,
       "p_qf": 0.0,
       "p_sf": 0.0,
+      "p_final": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "code": "FRA",
+      "name": "France",
+      "group": "I",
+      "elo": 2233,
+      "played": 3,
+      "pts": 9,
+      "gd": 8,
+      "gf": 10,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 1.0,
+      "p_qf": 1.0,
+      "p_sf": 1.0,
       "p_final": 0.0,
       "p_champion": 0.0
     },
