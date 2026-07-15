@@ -1,7 +1,7 @@
 {
   "as_of": "2026-07-14",
   "n_sims": 10000,
-  "completed_results": 101,
+  "completed_results": 102,
   "model_params": {
     "b0": 0.11078504091502825,
     "b_elo": 0.1859910450652972,
@@ -26,7 +26,7 @@
       "p_qf": 1.0,
       "p_sf": 1.0,
       "p_final": 1.0,
-      "p_champion": 0.5875
+      "p_champion": 0.5577
     },
     {
       "code": "ARG",
@@ -42,25 +42,8 @@
       "p_r16": 1.0,
       "p_qf": 1.0,
       "p_sf": 1.0,
-      "p_final": 0.5967,
-      "p_champion": 0.2721
-    },
-    {
-      "code": "ENG",
-      "name": "England",
-      "group": "L",
-      "elo": 2171,
-      "played": 3,
-      "pts": 7,
-      "gd": 4,
-      "gf": 6,
-      "pos": 1,
-      "p_qualify": 1.0,
-      "p_r16": 1.0,
-      "p_qf": 1.0,
-      "p_sf": 1.0,
-      "p_final": 0.4033,
-      "p_champion": 0.1404
+      "p_final": 1.0,
+      "p_champion": 0.4423
     },
     {
       "code": "MEX",
@@ -773,6 +756,23 @@
       "p_r16": 1.0,
       "p_qf": 0.0,
       "p_sf": 0.0,
+      "p_final": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "code": "ENG",
+      "name": "England",
+      "group": "L",
+      "elo": 2171,
+      "played": 3,
+      "pts": 7,
+      "gd": 4,
+      "gf": 6,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 1.0,
+      "p_qf": 1.0,
+      "p_sf": 1.0,
       "p_final": 0.0,
       "p_champion": 0.0
     },
