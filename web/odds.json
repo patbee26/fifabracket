@@ -1,7 +1,7 @@
 {
   "as_of": "2026-07-15",
   "n_sims": 10000,
-  "completed_results": 102,
+  "completed_results": 103,
   "model_params": {
     "b0": 0.11153646329383168,
     "b_elo": 0.1859440565165935,
