@@ -1,21 +1,21 @@
 {
-  "as_of": "2026-07-18",
+  "as_of": "2026-07-19",
   "n_sims": 10000,
-  "completed_results": 103,
+  "completed_results": 104,
   "model_params": {
-    "b0": 0.11181195153211863,
-    "b_elo": 0.1859199487555323,
-    "b_home": 0.25146140074381435,
+    "b0": 0.11176787335714801,
+    "b_elo": 0.18592389464077036,
+    "b_home": 0.25149918646886726,
     "rho": -0.041,
-    "n_records": 23385,
-    "mean_goals": 1.3889630390143737
+    "n_records": 23386,
+    "mean_goals": 1.388917406703968
   },
   "teams": [
     {
       "code": "ESP",
       "name": "Spain",
       "group": "H",
-      "elo": 2298,
+      "elo": 2327,
       "played": 3,
       "pts": 7,
       "gd": 5,
@@ -26,24 +26,7 @@
       "p_qf": 1.0,
       "p_sf": 1.0,
       "p_final": 1.0,
-      "p_champion": 0.5309
-    },
-    {
-      "code": "ARG",
-      "name": "Argentina",
-      "group": "J",
-      "elo": 2278,
-      "played": 3,
-      "pts": 9,
-      "gd": 7,
-      "gf": 8,
-      "pos": 1,
-      "p_qualify": 1.0,
-      "p_r16": 1.0,
-      "p_qf": 1.0,
-      "p_sf": 1.0,
-      "p_final": 1.0,
-      "p_champion": 0.4691
+      "p_champion": 1.0
     },
     {
       "code": "MEX",
@@ -638,6 +621,23 @@
       "p_qf": 1.0,
       "p_sf": 0.0,
       "p_final": 0.0,
+      "p_champion": 0.0
+    },
+    {
+      "code": "ARG",
+      "name": "Argentina",
+      "group": "J",
+      "elo": 2250,
+      "played": 3,
+      "pts": 9,
+      "gd": 7,
+      "gf": 8,
+      "pos": 1,
+      "p_qualify": 1.0,
+      "p_r16": 1.0,
+      "p_qf": 1.0,
+      "p_sf": 1.0,
+      "p_final": 1.0,
       "p_champion": 0.0
     },
     {
