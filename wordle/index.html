@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#121213" />
+<title>Wordle</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a1b;
+    --muted: #787c7e;
+    --border: #d3d6da;
+    --border-strong: #878a8c;
+    --key-bg: #d3d6da;
+    --key-fg: #1a1a1b;
+    --absent: #787c7e;
+    --present: #c9b458;
+    --correct: #6aaa64;
+    --tile-empty: #ffffff;
+    --modal-bg: #ffffff;
+    --shadow: rgba(0,0,0,0.2);
+  }
+  [data-theme="dark"] {
+    --bg: #121213;
+    --fg: #ffffff;
+    --muted: #818384;
+    --border: #3a3a3c;
+    --border-strong: #565758;
+    --key-bg: #818384;
+    --key-fg: #ffffff;
+    --absent: #3a3a3c;
+    --present: #b59f3b;
+    --correct: #538d4e;
+    --tile-empty: #121213;
+    --modal-bg: #1a1a1b;
+    --shadow: rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    height: 52px;
+    flex: 0 0 auto;
+  }
+  header h1 {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    margin: 0;
+    text-transform: uppercase;
+    text-align: center;
+    flex: 1;
+  }
+  .icon-btn {
+    background: none;
+    border: none;
+    color: var(--fg);
+    cursor: pointer;
+    font-size: 22px;
+    padding: 6px;
+    line-height: 1;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .icon-btn:hover { opacity: 0.7; }
+
+  main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  /* Board */
+  .board-wrap {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden;
+  }
+  .board {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    gap: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+    height: min(350px, 60vh);
+    width: min(330px, 90vw);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+  }
+  .tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 2px solid var(--border);
+    color: var(--fg);
+    background: var(--tile-empty);
+    user-select: none;
+    line-height: 1;
+  }
+  .tile.filled { border-color: var(--border-strong); animation: pop 0.1s ease-in-out; }
+  .tile.correct { background: var(--correct); border-color: var(--correct); color: #fff; }
+  .tile.present { background: var(--present); border-color: var(--present); color: #fff; }
+  .tile.absent  { background: var(--absent);  border-color: var(--absent);  color: #fff; }
+  .tile.reveal { animation: flip 0.5s ease forwards; }
+  .row.shake { animation: shake 0.5s; }
+  .row.win .tile { animation: bounce 0.6s; }
+
+  @keyframes pop { 0% { transform: scale(0.9); } 100% { transform: scale(1); } }
+  @keyframes flip {
+    0% { transform: rotateX(0); }
+    50% { transform: rotateX(-90deg); }
+    100% { transform: rotateX(0); }
+  }
+  @keyframes shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+  }
+  @keyframes bounce {
+    0%, 20% { transform: translateY(0); }
+    40% { transform: translateY(-30px); }
+    50% { transform: translateY(5px); }
+    60% { transform: translateY(-15px); }
+    80% { transform: translateY(2px); }
+    100% { transform: translateY(0); }
+  }
+
+  /* Keyboard */
+  .keyboard {
+    width: 100%;
+    max-width: 500px;
+    padding: 8px;
+    margin: 0 auto;
+    flex: 0 0 auto;
+  }
+  .kb-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    touch-action: manipulation;
+  }
+  .key {
+    flex: 1;
+    height: 58px;
+    border: none;
+    border-radius: 4px;
+    background: var(--key-bg);
+    color: var(--key-fg);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+  .key.wide { flex: 1.5; font-size: 0.72rem; }
+  .key:active { opacity: 0.7; }
+  .key.correct { background: var(--correct); color: #fff; }
+  .key.present { background: var(--present); color: #fff; }
+  .key.absent  { background: var(--absent);  color: #fff; }
+
+  /* Toast */
+  #toaster {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 30;
+    pointer-events: none;
+    width: max-content;
+    max-width: 90vw;
+  }
+  .toast {
+    background: var(--fg);
+    color: var(--bg);
+    padding: 12px 16px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    animation: fadein 0.1s;
+  }
+  @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+
+  /* Modal */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 40;
+    padding: 16px;
+  }
+  .overlay.show { display: flex; }
+  .modal {
+    background: var(--modal-bg);
+    color: var(--fg);
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 4px 23px 0 var(--shadow);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 {
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    margin: 0 0 16px;
+  }
+  .modal .close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--fg);
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .modal p { font-size: 0.95rem; line-height: 1.5; }
+  .modal .example { margin: 16px 0; }
+  .modal .example .row { width: 260px; max-width: 100%; gap: 4px; }
+  .modal .example .tile { font-size: 1.4rem; height: 42px; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 8px 0 20px;
+  }
+  .stat { text-align: center; }
+  .stat .num { font-size: 2rem; font-weight: 400; }
+  .stat .lbl { font-size: 0.72rem; }
+
+  .dist { margin-bottom: 20px; }
+  .dist-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+  }
+  .dist-row .g { width: 12px; text-align: right; }
+  .dist-bar {
+    background: var(--absent);
+    color: #fff;
+    text-align: right;
+    padding: 2px 6px;
+    min-width: 22px;
+    font-weight: 700;
+    border-radius: 2px;
+  }
+  .dist-bar.hot { background: var(--correct); }
+
+  .end-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+  }
+  .divider-v { width: 1px; align-self: stretch; background: var(--border); }
+  .end-col { flex: 1; text-align: center; }
+  .end-col .label { font-size: 0.8rem; text-transform: uppercase; font-weight: 700; }
+  #countdown { font-size: 1.8rem; font-variant-numeric: tabular-nums; }
+
+  .btn {
+    background: var(--correct);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 18px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+  }
+  .btn:hover { opacity: 0.9; }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .toggle-row .desc { font-size: 0.75rem; color: var(--muted); }
+  .switch { position: relative; width: 44px; height: 24px; flex: 0 0 auto; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; inset: 0;
+    background: var(--border-strong); border-radius: 24px; transition: 0.2s;
+  }
+  .slider:before {
+    content: ""; position: absolute; height: 18px; width: 18px;
+    left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.2s;
+  }
+  .switch input:checked + .slider { background: var(--correct); }
+  .switch input:checked + .slider:before { transform: translateX(20px); }
+
+  @media (max-height: 680px) {
+    .key { height: 48px; }
+    .board { height: min(300px, 52vh); }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <button class="icon-btn" id="help-btn" aria-label="How to play" title="How to play">?</button>
+    <h1>Wordle</h1>
+    <div style="display:flex;">
+      <button class="icon-btn" id="stats-btn" aria-label="Statistics" title="Statistics">&#128202;</button>
+      <button class="icon-btn" id="theme-btn" aria-label="Toggle theme" title="Toggle theme">&#9790;</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="board-wrap">
+      <div class="board" id="board" aria-label="Wordle game board"></div>
+    </div>
+    <div class="keyboard" id="keyboard"></div>
+  </main>
+
+  <div id="toaster" aria-live="polite"></div>
+
+  <!-- Help modal -->
+  <div class="overlay" id="help-overlay">
+    <div class="modal">
+      <button class="close" data-close aria-label="Close">&times;</button>
+      <h2>How To Play</h2>
+      <p><strong>Guess the Wordle in 6 tries.</strong></p>
+      <ul style="font-size:0.9rem; line-height:1.5; padding-left:20px;">
+        <li>Each guess must be a valid 5-letter word.</li>
+        <li>The color of the tiles will change to show how close your guess was.</li>
+      </ul>
+      <hr class="divider" />
+      <p style="font-weight:700; margin-bottom:8px;">Examples</p>
+      <div class="example">
+        <div class="row" id="ex1"></div>
+        <p style="margin:6px 0 0;"><strong>W</strong> is in the word and in the correct spot.</p>
+      </div>
+      <div class="example">
+        <div class="row" id="ex2"></div>
+        <p style="margin:6px 0 0;"><strong>I</strong> is in the word but in the wrong spot.</p>
+      </div>
+      <div class="example">
+        <div class="row" id="ex3"></div>
+        <p style="margin:6px 0 0;"><strong>U</strong> is not in the word in any spot.</p>
+      </div>
+      <hr class="divider" />
+      <p style="font-size:0.8rem; color:var(--muted);">A new puzzle is released daily at midnight. If you haven't already, you can play the classic and share your results.</p>
+    </div>
+  </div>
+
+  <!-- Stats modal -->
+  <div class="overlay" id="stats-overlay">
+    <div class="modal">
+      <button class="close" data-close aria-label="Close">&times;</button>
+      <h2>Statistics</h2>
+      <div class="stats">
+        <div class="stat"><div class="num" id="st-played">0</div><div class="lbl">Played</div></div>
+        <div class="stat"><div class="num" id="st-win">0</div><div class="lbl">Win %</div></div>
+        <div class="stat"><div class="num" id="st-streak">0</div><div class="lbl">Current<br>Streak</div></div>
+        <div class="stat"><div class="num" id="st-max">0</div><div class="lbl">Max<br>Streak</div></div>
+      </div>
+      <h2>Guess Distribution</h2>
+      <div class="dist" id="dist"></div>
+      <div id="end-panel" style="display:none;">
+        <hr class="divider" />
+        <div class="end-actions">
+          <div class="end-col">
+            <div class="label">Next Wordle</div>
+            <div id="countdown">--:--:--</div>
+          </div>
+          <div class="divider-v"></div>
+          <div class="end-col">
+            <button class="btn" id="share-btn">Share &#128203;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings modal -->
+  <div class="overlay" id="settings-overlay">
+    <div class="modal">
+      <button class="close" data-close aria-label="Close">&times;</button>
+      <h2>Settings</h2>
+      <div class="toggle-row">
+        <div>
+          <div>Hard Mode</div>
+          <div class="desc">Any revealed hints must be used in subsequent guesses</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="hard-toggle" /><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div>Dark Theme</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="dark-toggle" /><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row" style="border-bottom:none;">
+        <div>
+          <div>New Random Game</div>
+          <div class="desc">Start over with a fresh random word right now</div>
+        </div>
+        <button class="btn" id="new-game-btn" style="padding:8px 12px;">New Game</button>
+      </div>
+    </div>
+  </div>
+
+<script src="words.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
