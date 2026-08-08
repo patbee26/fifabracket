@@ -511,9 +511,8 @@
   // ---------------------------------------------------------------
   function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
-    document.querySelector('meta[name="theme-color"]').setAttribute(
-      "content", theme === "dark" ? "#121213" : "#ffffff"
-    );
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", theme === "dark" ? "#121213" : "#ffffff");
     const darkToggle = document.getElementById("dark-toggle");
     if (darkToggle) darkToggle.checked = theme === "dark";
     try { localStorage.setItem(LS.theme, theme); } catch (e) {}
