@@ -11,6 +11,41 @@ export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const money = (n) => `$${Math.abs(Math.round(n)).toLocaleString('en-US')}`;
 export const tokenOf = (id) => TOKENS.find((t) => t.id === id) || TOKENS[0];
 
+// The Space Needle silhouette, matching the header logo. Same shapes, but
+// drawn in currentColor so it works as an icon at any size.
+const NEEDLE = [
+  'M29.6 2h4.8v19h-4.8z',
+  'M9 23Q32 13 55 23 45 31 32 31 19 31 9 23Z',
+  'M27.6 31h8.8l1.1 15H26.5z',
+  'M26.3 46h4.4q-1.7 8.5-7.6 15.5h-6.3q6.9-7.3 9.5-15.5z',
+  'M37.7 46h-4.4q1.7 8.5 7.6 15.5h6.3q-6.9-7.3-9.5-15.5z',
+  'M29.6 46h4.8v15.5h-4.8z',
+];
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+function needleGlyph() {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 64 64');
+  svg.setAttribute('class', 'needle-glyph');
+  svg.setAttribute('aria-hidden', 'true');
+  for (const d of NEEDLE) {
+    const path = document.createElementNS(SVG_NS, 'path');
+    path.setAttribute('d', d);
+    svg.appendChild(path);
+  }
+  return svg;
+}
+
+/** Put a token's glyph into an element — an emoji, or a drawn icon. */
+export function setToken(el, tokenId) {
+  const t = tokenOf(tokenId);
+  el.textContent = '';
+  if (t.icon === 'needle') el.appendChild(needleGlyph());
+  else el.textContent = t.emoji;
+  el.setAttribute('title', t.label);
+}
+
 // Distinct outline colour per seat, so tokens stay tellable apart.
 const SEAT_COLORS = ['#e8493f', '#2f7fe0', '#39a85c', '#e0a11c', '#9b59b6', '#e3733c', '#17a9a0', '#7d5fff'];
 const seatColor = (idx) => SEAT_COLORS[idx % SEAT_COLORS.length];
@@ -137,7 +172,7 @@ export function ensureTokens(state) {
       el = document.createElement('div');
       el.className = 'token';
       el.dataset.player = p.id;
-      el.textContent = tokenOf(p.token).emoji;
+      setToken(el, p.token);
       el.style.setProperty('--tok', seatColor(idx));
       el.title = p.name;
       layer.appendChild(el);
@@ -251,7 +286,7 @@ export function renderPlayers(state, meId, onPick) {
     const dot = document.createElement('div');
     dot.className = 'dot';
     dot.style.setProperty('--tok', seatColor(idx));
-    dot.textContent = tokenOf(p.token).emoji;
+    setToken(dot, p.token);
 
     const nm = document.createElement('div');
     nm.className = 'nm';

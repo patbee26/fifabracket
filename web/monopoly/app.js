@@ -86,7 +86,7 @@ function buildTokenPicker() {
     const b = document.createElement('button');
     b.className = 'token-pick';
     b.type = 'button';
-    b.textContent = t.emoji;
+    ui.setToken(b, t.id);
     b.title = t.label;
     b.setAttribute('aria-pressed', String(t.id === app.myToken));
     b.addEventListener('click', () => {
@@ -204,7 +204,7 @@ function renderLobby() {
 
     const emoji = document.createElement('div');
     emoji.className = 'emoji';
-    emoji.textContent = ui.tokenOf(seat.token).emoji;
+    ui.setToken(emoji, seat.token);
 
     const who = document.createElement('div');
     who.className = 'who';
@@ -405,6 +405,14 @@ function renderActions() {
   if (legal.includes('concede')) {
     addButton(bar, 'Declare bankruptcy', () => confirmConcede(), { danger: true, wide: true });
   }
+}
+
+/** A token glyph sized to sit inside a line of text. */
+function inlineToken(tokenId) {
+  const span = document.createElement('span');
+  span.className = 'inline-token';
+  ui.setToken(span, tokenId);
+  return span;
 }
 
 function addButton(bar, label, onClick, { ghost, danger, wide, small, disabled } = {}) {
@@ -622,7 +630,7 @@ function showGameOver() {
         row.className = 'manage-row';
         const nm = document.createElement('div');
         nm.className = 'nm';
-        nm.textContent = `${n + 1}. ${ui.tokenOf(p.token).emoji} ${p.name}`;
+        nm.append(`${n + 1}. `, inlineToken(p.token), ` ${p.name}`);
         const val = document.createElement('div');
         val.textContent = p.bankrupt ? 'bankrupt' : money(netWorth(state, p.id));
         row.append(nm, val);
@@ -934,7 +942,7 @@ function inspectPlayer(playerId) {
 
   ui.openModal((modal) => {
     const h = document.createElement('h2');
-    h.textContent = `${ui.tokenOf(p.token).emoji} ${p.name}`;
+    h.append(inlineToken(p.token), ` ${p.name}`);
     const sub = document.createElement('p');
     sub.className = 'sub';
     sub.textContent = p.bankrupt

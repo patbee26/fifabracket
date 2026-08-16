@@ -85,7 +85,8 @@ export const TOKENS = [
   { id: 'guitar',  label: 'Guitar',       emoji: '🎸' },
   { id: 'rain',    label: 'Umbrella',     emoji: '☂️' },
   { id: 'plane',   label: 'Jet',          emoji: '✈️' },
-  { id: 'tower',   label: 'Space Needle', emoji: '🗼' },
+  // Drawn rather than an emoji: 🗼 is the Tokyo Tower. See `setToken` in ui.js.
+  { id: 'tower',   label: 'Space Needle', icon: 'needle' },
   { id: 'crab',    label: 'Dungeness Crab', emoji: '🦀' },
 ];
 

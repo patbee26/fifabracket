@@ -144,6 +144,19 @@ input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1p
   font-size: 1.1rem;
 }
 
+/* Drawn token glyphs (the Space Needle). Sized in em so they scale with
+   whatever they sit in, at 1.15em to match the optical size of an emoji. */
+.needle-glyph {
+  width: 1.15em;
+  height: 1.15em;
+  display: block;
+  fill: currentColor;
+}
+.inline-token {
+  display: inline-flex;
+  vertical-align: -0.16em;
+}
+
 /* ----------------------------------------------------------------- views */
 
 .view { display: none; }
