@@ -211,7 +211,7 @@ async function hopAlong(playerId, path, state) {
     el.style.top = `${y}px`;
     el.classList.add('hopping');
     sfx.hop();
-    await wait(115);
+    await wait(150);
     el.classList.remove('hopping');
   }
 }
@@ -529,7 +529,7 @@ export async function playEvents(state, events, { onRender } = {}) {
             el.style.top = `${y}px`;
             sfx.hop();
           }
-          await wait(230);
+          await wait(320);
         }
         // Keep our local mirror in step so crowding maths stays right.
         const mover = state.players.find((p) => p.id === ev.player);
@@ -540,18 +540,18 @@ export async function playEvents(state, events, { onRender } = {}) {
 
       case 'passGo':
         sfx.passGo();
-        await wait(180);
+        await wait(320);
         break;
 
       case 'cash':
         floatMoney(ev.player, ev.amount);
         if (ev.amount > 0) sfx.cashUp(); else sfx.cashDown();
-        await wait(150);
+        await wait(300);
         break;
 
       case 'rent':
         sfx.rent();
-        await wait(220);
+        await wait(420);
         break;
 
       case 'card':
@@ -563,43 +563,43 @@ export async function playEvents(state, events, { onRender } = {}) {
         sfx.buy();
         flashSpace(ev.space);
         if (onRender) onRender();
-        await wait(240);
+        await wait(420);
         break;
 
       case 'build':
         sfx.build();
         if (onRender) onRender();
-        await wait(180);
+        await wait(300);
         break;
 
       case 'mortgage':
         if (onRender) onRender();
-        await wait(120);
+        await wait(200);
         break;
 
       case 'jailed':
       case 'speeding':
         sfx.jail();
-        await wait(320);
+        await wait(520);
         break;
 
       case 'auctionStart':
         sfx.auction();
-        await wait(200);
+        await wait(360);
         break;
 
       case 'auctionEnd':
         sfx.gavel();
-        await wait(240);
+        await wait(430);
         break;
 
       case 'tradeResult':
-        if (ev.accepted) { sfx.trade(); await wait(260); }
+        if (ev.accepted) { sfx.trade(); await wait(460); }
         break;
 
       case 'bankrupt':
         sfx.bankrupt();
-        await wait(600);
+        await wait(850);
         break;
 
       case 'gameover':
@@ -610,6 +610,9 @@ export async function playEvents(state, events, { onRender } = {}) {
 
       case 'turn':
         sfx.turn();
+        // A clear gap between players, so a run of CPU turns reads as
+        // separate turns rather than one blur of movement.
+        await wait(650);
         break;
 
       default:
