@@ -7,12 +7,31 @@
 <meta name="description" content="Emerald City — a Seattle property trading game for up to 8 players, online or against the CPU." />
 <title>Emerald City</title>
 <link rel="stylesheet" href="styles.css" />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗼</text></svg>" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><g fill='%230f8a7e'><rect x='29.6' y='2' width='4.8' height='19' rx='2.4'/><path d='M9 23Q32 13 55 23 45 31 32 31 19 31 9 23Z'/><path d='M27.6 31h8.8l1.1 15H26.5z'/><path d='M26.3 46h4.4q-1.7 8.5-7.6 15.5h-6.3q6.9-7.3 9.5-15.5z'/><path d='M37.7 46h-4.4q1.7 8.5 7.6 15.5h6.3q-6.9-7.3-9.5-15.5z'/><rect x='29.6' y='46' width='4.8' height='15.5'/></g></svg>" />
 </head>
 <body>
 
 <header class="topbar">
-  <div class="brand"><span class="mark">🗼</span><span class="full">Emerald City</span></div>
+  <div class="brand">
+    <!-- Drawn rather than an emoji: 🗼 is the Tokyo Tower, not the Space Needle. -->
+    <svg class="mark" viewBox="0 0 64 64" role="img" aria-label="Space Needle">
+      <defs>
+        <linearGradient id="needleGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop class="g0" offset="0%" stop-color="#0f8a7e" />
+          <stop class="g1" offset="100%" stop-color="#e2703a" />
+        </linearGradient>
+      </defs>
+      <g fill="url(#needleGrad)">
+        <rect x="30.2" y="2" width="3.6" height="19" rx="1.8" />
+        <path d="M9 23Q32 13 55 23 45 31 32 31 19 31 9 23Z" />
+        <path d="M27.6 31h8.8l1.1 15H26.5z" />
+        <path d="M26.3 46h4.4q-1.7 8.5-7.6 15.5h-6.3q6.9-7.3 9.5-15.5z" />
+        <path d="M37.7 46h-4.4q1.7 8.5 7.6 15.5h6.3q-6.9-7.3-9.5-15.5z" />
+        <rect x="30.2" y="46" width="3.6" height="15.5" />
+      </g>
+    </svg>
+    <span class="full">Emerald City</span>
+  </div>
   <div class="spacer"></div>
   <div class="roomcode" id="roomCode" hidden></div>
   <button class="icon-btn" id="soundBtn" title="Toggle sound" aria-label="Toggle sound">🔊</button>

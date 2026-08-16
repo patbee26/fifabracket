@@ -108,10 +108,17 @@ input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1p
   letter-spacing: -0.02em;
 }
 .brand .mark {
-  font-size: 1.5rem;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  display: block;
   filter: drop-shadow(0 2px 4px var(--shadow));
   animation: bob 4s ease-in-out infinite;
 }
+/* Gradient stops live here so they follow the theme; the inline stop-color
+   attributes are the fallback. */
+#needleGrad .g0 { stop-color: var(--accent); }
+#needleGrad .g1 { stop-color: var(--accent-warm); }
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
 .topbar .spacer { flex: 1; }
