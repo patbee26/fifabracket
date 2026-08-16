@@ -19,3 +19,16 @@ jobs:
           for t in normalize reconcile elo poisson standings bracket simulator; do
             python3 "tests/test_$t.py"
           done
+
+  monopoly:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run Emerald City tests (no dependencies)
+        run: |
+          for t in engine ai server; do
+            node "tests/test_monopoly_$t.mjs"
+          done

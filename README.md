@@ -84,7 +84,10 @@ data/
   raw/                          cached downloads + model.json + odds.json (gitignored)
 scripts/   check_sources.py · fetch_data.py · build_model.py · backtest.py · simulate.py · run_pipeline.py
 tests/     offline unit tests (33 cases; run standalone or via pytest)
+           + test_monopoly_{engine,ai,server}.mjs (Emerald City, Node, no deps)
 web/       index.html (static dashboard) + odds.json (+ odds.prev.json) — the deployable site
+  monopoly/  Emerald City, the Seattle board game (see its own README)
+netlify/   functions/game.mjs (multiplayer endpoint) + lib/rooms.mjs (room logic)
 .github/workflows/   update-odds.yml (hourly publish) · ci.yml (tests on push)
 ```
 
@@ -105,6 +108,21 @@ it out. Deploy = publish the `web/` folder; the pipeline (Phase 3) regenerates `
 block), so the page works **opened directly** (double-click → `file://`) *and* served.
 Browsers block `fetch()` of a local file, so the `file://` version reads the embedded
 snapshot; serving over http additionally enables the live fetch + auto-refresh.
+
+## Also in this repo
+
+**[Emerald City](web/monopoly/)** — a Seattle-themed property trading game for 2–8 players.
+Play online with a four-letter room code, around one screen, or against CPU opponents. The
+full ruleset is implemented (auctions, even-build houses and hotels, mortgages, trading,
+bankruptcy chains), the rules engine is shared byte-for-byte between browser and server, and
+multiplayer runs on a Netlify function backed by Blobs.
+
+```bash
+node scripts/monopoly_dev_server.mjs      # http://localhost:4319/monopoly/
+```
+
+**[Wordle](wordle/)** — a self-contained Wordle clone. Note it lives outside `web/`, so it
+is not published by the Netlify deploy; serve it locally to play.
 
 ## Roadmap
 
