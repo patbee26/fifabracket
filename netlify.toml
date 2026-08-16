@@ -3,6 +3,12 @@
   publish = "web"
   command = ""
 
+# The Emerald City game's multiplayer API. Served at /api/game (the path is
+# declared in the function itself).
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 # Always revalidate the data file so a redeploy serves fresh odds immediately
 # (the page also cache-busts its fetch, but this covers direct hits).
 [[headers]]
