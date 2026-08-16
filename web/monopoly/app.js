@@ -61,6 +61,36 @@ function toggleTheme() {
   if (meta) meta.setAttribute('content', next === 'dark' ? '#0d1512' : '#0f3d2e');
 }
 
+// Higher multiplier = slower. Relaxed is the default: the whole point of the
+// animation is being able to follow what the other players just did.
+const SPEEDS = [
+  { id: 'relaxed', label: 'Relaxed pace', icon: '🐢', mult: 1.7 },
+  { id: 'normal',  label: 'Normal pace',  icon: '🚶', mult: 1.0 },
+  { id: 'quick',   label: 'Quick pace',   icon: '⚡', mult: 0.55 },
+];
+
+function initSpeed() {
+  const saved = localStorage.getItem('emeraldcity.speed');
+  applySpeed(SPEEDS.find((s) => s.id === saved) || SPEEDS[0], false);
+}
+
+function applySpeed(preset, announce = true) {
+  ui.setSpeed(preset.mult);
+  localStorage.setItem('emeraldcity.speed', preset.id);
+  const btn = $('speedBtn');
+  btn.textContent = preset.icon;
+  btn.title = `${preset.label} — click to change`;
+  btn.setAttribute('aria-label', preset.label);
+  if (announce) ui.toast(preset.label);
+}
+
+function cycleSpeed() {
+  const current = localStorage.getItem('emeraldcity.speed') || SPEEDS[0].id;
+  const idx = SPEEDS.findIndex((s) => s.id === current);
+  applySpeed(SPEEDS[(idx + 1) % SPEEDS.length]);
+  sfx.click();
+}
+
 function initSound() {
   const on = localStorage.getItem('emeraldcity.sound') !== 'off';
   setEnabled(on);
@@ -273,8 +303,10 @@ async function sync(next) {
       }
       ui.renderPlayers(state, viewerId(), inspectPlayer);
 
-      // A long backlog (we were away, or just joined) is caught up silently.
-      if (events.length > 26) {
+      // A genuinely long backlog — we were away, or just joined — is caught up
+      // silently. The threshold has to clear a full cycle of CPU turns, or
+      // ordinary play would skip its own animation.
+      if (events.length > 120) {
         app.renderedSeq = state.seq;
       } else {
         await ui.playEvents(state, events, { onRender: () => ui.renderBoard(state) });
@@ -991,6 +1023,7 @@ function inspectPlayer(playerId) {
 function init() {
   initTheme();
   initSound();
+  initSpeed();
   buildTokenPicker();
   ui.buildBoard();
 
@@ -1000,6 +1033,7 @@ function init() {
 
   $('themeBtn').addEventListener('click', toggleTheme);
   $('soundBtn').addEventListener('click', toggleSound);
+  $('speedBtn').addEventListener('click', cycleSpeed);
   document.addEventListener('pointerdown', unlock, { once: true });
 
   $('hostBtn').addEventListener('click', () => { sfx.click(); hostOnline(); });
